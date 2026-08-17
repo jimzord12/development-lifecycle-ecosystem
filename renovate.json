@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on monday"],
+  "rangeStrategy": "pin",
+  "automerge": false,
+  "separateMajorMinor": true,
+  "dependencyDashboard": true
+}
