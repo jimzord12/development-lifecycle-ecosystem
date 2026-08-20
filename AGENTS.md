@@ -40,13 +40,13 @@ Run `pnpm validate` before considering a code/configuration change complete.
 - Prefer small, reversible, dependency-light solutions over speculative infrastructure.
 - Do not add packages, build systems, bots, or provider-specific instruction files without a demonstrated need.
 - Add package-local `AGENTS.md` files only when a package needs materially different guidance; the nearest applicable file wins.
-- Use normal pull-request workflows. Do not bypass required validation or branch protections.
 
 ## Git
 
 After work is complete and `pnpm validate` has passed:
 
-- commit the intended files
-- push the branch to the remote
+- commit the intended files on `main`
+- push `main` to the remote
+- do not open pull requests
 
 Do not leave completed work uncommitted or unpushed.
