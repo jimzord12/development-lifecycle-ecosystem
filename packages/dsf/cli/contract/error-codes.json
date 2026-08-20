@@ -1,0 +1,9 @@
+{
+  "MISSING_COMMAND": "No command was provided and neither --help nor --version was requested.",
+  "UNKNOWN_COMMAND": "The first positional argument is not a documented command. No typo guessing is performed.",
+  "UNKNOWN_OPTION": "An unrecognized flag was provided.",
+  "INVALID_INVOCATION": "A known command was invoked with malformed arguments or an incompatible flag combination.",
+  "DELIVERY_ENGINE_NOT_IMPLEMENTED": "The Delivery semantic engine is not available in this bootstrap. Used by read-only validate until authoritative DSF schemas exist.",
+  "VALIDATION_FAILED": "Reserved for real schema/graph/invariant validation failure once the Delivery engine exists.",
+  "COMPATIBILITY_UNSUPPORTED": "The CLI cannot safely operate on the target artifact or version. Must be raised before semantic mutation."
+}

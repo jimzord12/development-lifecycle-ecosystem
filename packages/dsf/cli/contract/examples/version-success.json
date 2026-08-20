@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "command": "version",
+  "result": {
+    "cli": {
+      "name": "delivery",
+      "version": "0.1.0"
+    },
+    "component": {
+      "id": "dsf",
+      "version": "0.1.0"
+    },
+    "dleCliStandard": 1
+  },
+  "warnings": []
+}

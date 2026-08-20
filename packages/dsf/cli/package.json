@@ -1,0 +1,40 @@
+{
+  "name": "@dle/delivery-cli",
+  "version": "0.1.0",
+  "description": "Optional Delivery CLI companion for the Delivery System Framework (DSF).",
+  "license": "MIT",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "delivery": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "contract"
+  ],
+  "engines": {
+    "node": ">=24.18.0 <25"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@vitest/coverage-v8": "4.1.10",
+    "typescript": "6.0.3",
+    "vitest": "4.1.10"
+  }
+}

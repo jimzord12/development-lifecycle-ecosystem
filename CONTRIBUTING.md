@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for contributing to the Design Workspace Framework.
+Thanks for contributing to the Development Lifecycle Ecosystem.
 
 ## Requirements
 
@@ -32,3 +32,5 @@ Do not add empty or speculative changesets for root-only maintenance that does n
 This is a public framework repository. Do not contribute credentials, private company material, private repository information, project-specific delivery artifacts, or proprietary implementation details.
 
 If a required semantic contract is missing, raise the gap instead of guessing behavior.
+
+First-class DLE Components belong under `packages/<component-id>/`. Companion CLIs belong under their parent component. Do not add Delivery CLI as a peer of DSF.

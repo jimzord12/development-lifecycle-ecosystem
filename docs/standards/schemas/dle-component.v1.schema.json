@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "dle-component.v1.schema.json",
+  "title": "DLE Component Manifest V1",
+  "description": "Technology-neutral root identity manifest for a first-class DLE Component.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifestVersion", "id", "name", "version", "kind"],
+  "properties": {
+    "manifestVersion": {
+      "description": "Manifest format version.",
+      "const": 1
+    },
+    "id": {
+      "description": "Immutable machine identity of the component.",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "name": {
+      "description": "Human-readable component name.",
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "description": "Independent component Semantic Version.",
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "description": "Descriptive category such as framework or system. The vocabulary is not permanently closed.",
+      "type": "string",
+      "minLength": 1
+    },
+    "cli": {
+      "description": "Optional relationship metadata when a companion CLI exists.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "description": "Companion CLI executable/product name.",
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "description": "Independent CLI Semantic Version.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

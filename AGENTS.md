@@ -2,13 +2,22 @@
 
 ## Repository purpose
 
-This repository is the public, framework-generic home of the Design Workspace Framework and reusable tooling built around it.
+This repository is the public, framework-generic home of the Development Lifecycle Ecosystem (DLE) and reusable tooling built around its independently versioned lifecycle components.
 
 Do not add private company material, credentials, private repository identities, project-specific delivery artifacts, or proprietary implementation details.
 
 ## Authority
 
 Treat checked-in specifications, decision records, schemas, fixtures, and tests as authoritative for the behavior they explicitly define. Do not invent missing semantic contracts. When required behavior is underspecified or contradictory, stop that behavior-changing work and surface the gap clearly.
+
+## Architecture
+
+- DLE is an umbrella, not a mandatory shared runtime.
+- First-class components occupy `packages/<component-id>/` with `dle-component.json` and a README Public Contract.
+- Cross-component dependencies are directional and contract-only. Monorepo co-location grants no permission to import internals.
+- Companion CLIs are owned by their parent component. Delivery CLI lives at `packages/dsf/cli/` and must not be introduced as `packages/delivery-cli/`.
+- Follow [DLE Component Standard V1](./docs/standards/dle-component-standard-v1.md) and [DLE CLI Standard V1](./docs/standards/dle-cli-standard-v1.md).
+- Package-local `AGENTS.md` files override this file only for that package. The nearest applicable file wins.
 
 ## Standard commands
 
@@ -32,3 +41,12 @@ Run `pnpm validate` before considering a code/configuration change complete.
 - Do not add packages, build systems, bots, or provider-specific instruction files without a demonstrated need.
 - Add package-local `AGENTS.md` files only when a package needs materially different guidance; the nearest applicable file wins.
 - Use normal pull-request workflows. Do not bypass required validation or branch protections.
+
+## Git
+
+After work is complete and `pnpm validate` has passed:
+
+- commit the intended files
+- push the branch to the remote
+
+Do not leave completed work uncommitted or unpushed.

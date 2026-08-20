@@ -1,0 +1,11 @@
+{
+  "manifestVersion": 1,
+  "id": "dsf",
+  "name": "Delivery System Framework",
+  "version": "0.1.0",
+  "kind": "framework",
+  "cli": {
+    "name": "delivery",
+    "version": "0.1.0"
+  }
+}

@@ -1,10 +1,19 @@
-# Design Workspace Framework
+# Development Lifecycle Ecosystem
 
-An agent-friendly framework for turning ideas into explicit, versioned design and implementation-ready delivery plans.
+The Development Lifecycle Ecosystem (DLE) is the public, framework-generic umbrella for loosely coupled lifecycle frameworks, systems, and companion tooling.
+
+DLE is not one giant framework and does not imply one mandatory runtime. First-class components own one bounded lifecycle responsibility, publish an explicit public contract, and are independently versioned and distributable.
 
 ## Status
 
-This repository currently provides the public monorepo foundation for reusable Design Workspace Framework tooling and packages. Framework packages will be introduced incrementally as their contracts are finalized.
+This repository currently provides:
+
+- the DLE Component Standard V1
+- the DLE CLI Standard V1
+- the DSF first-class component boundary
+- a Delivery CLI bootstrap owned by DSF
+
+Additional first-class components such as DWF (Design Workspace Framework) and IRS (Implementation Record System) are part of the ecosystem model. Their packages are added only when their contracts are ready. Do not treat co-location in this monorepo as a runtime coupling.
 
 ## Principles
 
@@ -13,6 +22,23 @@ This repository currently provides the public monorepo foundation for reusable D
 - Deterministic workflows shared by humans and coding agents.
 - Small, reversible tooling choices over speculative infrastructure.
 - Public, framework-generic content only.
+- Contract-only cross-component dependencies.
+- No mandatory shared DLE runtime.
+
+## Standards
+
+- [DLE Component Standard V1](./docs/standards/dle-component-standard-v1.md)
+- [DLE CLI Standard V1](./docs/standards/dle-cli-standard-v1.md)
+
+## Components
+
+First-class DLE Components live under [`packages/<component-id>/`](./packages/). Each component root has `dle-component.json` and a README with a **Public Contract** section.
+
+Currently materialized:
+
+- [`packages/dsf`](./packages/dsf/) — Delivery System Framework. Owns the optional [Delivery CLI](./packages/dsf/cli/) under `packages/dsf/cli/`.
+
+Delivery CLI is not a peer component. Do not add `packages/delivery-cli/`.
 
 ## Development
 
@@ -40,10 +66,6 @@ format:check → lint → typecheck → test:coverage → build
 ```
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for contribution workflow and [`AGENTS.md`](./AGENTS.md) for coding-agent guidance.
-
-## Packages
-
-Reusable packages live under [`packages/`](./packages/). The repository intentionally starts without placeholder packages; package boundaries are added only when a real framework capability is ready.
 
 ## License
 
