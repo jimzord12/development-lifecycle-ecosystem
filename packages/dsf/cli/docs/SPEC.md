@@ -65,13 +65,13 @@ Bootstrap: no write-oriented Delivery commands are implemented. `assertWriteComp
 
 ### Implemented now
 
-| Invocation                  | Preconditions               | Side effects     | Result                                                                                   |
-| --------------------------- | --------------------------- | ---------------- | ---------------------------------------------------------------------------------------- |
-| `delivery --help` / `-h`    | none                        | none             | exit 0; help text                                                                        |
-| `delivery <command> --help` | command is known            | none             | exit 0; command help                                                                     |
-| `delivery --version`        | none                        | none             | identity                                                                                 |
-| `delivery validate`         | none beyond universal flags | none (read-only) | fail closed with `DELIVERY_ENGINE_NOT_IMPLEMENTED` until authoritative DSF schemas exist |
-| `--json` on the above       | none                        | none             | one JSON envelope + newline                                                              |
+| Invocation                  | Preconditions                 | Side effects     | Result                                                                                        |
+| --------------------------- | ----------------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
+| `delivery --help` / `-h`    | none                          | none             | exit 0; help text                                                                             |
+| `delivery <command> --help` | command is known              | none             | exit 0; command help                                                                          |
+| `delivery --version`        | none                          | none             | identity                                                                                      |
+| `delivery validate`         | `delivery/` under process CWD | none (read-only) | schema v2 + graph/invariant validation; `COMPATIBILITY_UNSUPPORTED` for other schema versions |
+| `--json` on the above       | none                          | none             | one JSON envelope + newline                                                                   |
 
 No-args `delivery` is a missing-command failure (`MISSING_COMMAND`), not implied help.
 
@@ -169,8 +169,8 @@ Stable codes are catalogued in [`../contract/error-codes.json`](../contract/erro
 | `UNKNOWN_COMMAND`                 | first positional is not a known command; no typo guessing                       |
 | `UNKNOWN_OPTION`                  | unrecognized flag, including `--quiet` / `--verbose` unless later specified     |
 | `INVALID_INVOCATION`              | known command with malformed extra arguments or incompatible flag combinations  |
-| `DELIVERY_ENGINE_NOT_IMPLEMENTED` | `validate` (and later domain reads/writes) before the Delivery engine exists    |
-| `VALIDATION_FAILED`               | reserved for real structural/graph/invariant failure once the engine exists     |
+| `DELIVERY_ENGINE_NOT_IMPLEMENTED` | reserved for unimplemented Delivery domain/engine commands                      |
+| `VALIDATION_FAILED`               | Definition discovery, JSON, schema, or graph/invariant failure                  |
 | `COMPATIBILITY_UNSUPPORTED`       | target artifact/version cannot be operated on safely; must fire before mutation |
 
 Do not create a DLE-wide numeric error taxonomy. Exit is `0` or non-zero only.
@@ -179,19 +179,29 @@ Do not create a DLE-wide numeric error taxonomy. Exit is `0` or non-zero only.
 
 `validate` is read-only.
 
-Bootstrap pipeline:
+Pipeline:
 
 1. parse argv; fail closed on unknown options/commands
-2. never read stdin
-3. never write files
-4. return `DELIVERY_ENGINE_NOT_IMPLEMENTED`
+2. never read stdin; never write files
+3. discover `<cwd>/delivery/`
+4. if any parsed `schemaVersion` number is not `2`, fail with `COMPATIBILITY_UNSUPPORTED`
+5. structurally validate against published v2 schemas
+6. validate references/graph/invariants from the DSF 1.1.1 contract
+7. report sorted findings without repair
 
-Later engine pipeline (when DSF schemas exist):
+JSON success `result` includes `valid`, `definitionSchemaVersion`, and `counts`. JSON failure `error.details.findings` is the finding array.
 
-1. resolve Definition inputs from documented discovery or explicit paths
-2. structurally validate against the published schema
-3. validate references/graph/invariants
-4. report findings without repair
+Finding shape:
+
+```json
+{
+  "kind": "schema",
+  "artifact": "phases/P-002.json",
+  "path": "/dependsOn/0",
+  "code": "REFERENCE_NOT_FOUND",
+  "message": "Referenced Phase P-999 does not exist."
+}
+```
 
 `validate` must not mean operational eligibility. That belongs to later `status` / phase-start preconditions.
 

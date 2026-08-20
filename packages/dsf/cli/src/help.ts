@@ -45,7 +45,7 @@ USAGE
   delivery [--json] validate
 
 ARGUMENTS
-  none in this bootstrap
+  none. The Delivery Definition is discovered at <cwd>/delivery/.
 
 OPTIONS
   -h, --help     Print this help and exit 0.
@@ -53,14 +53,15 @@ OPTIONS
 
 DEFAULTS
   Human-readable output unless --json is passed.
+  Discovery uses the process working directory. There is no --root or --cwd flag.
 
 SIDE EFFECTS
-  None. validate never repairs, writes, or mutates Git.
+  None. validate never repairs, writes, creates .cli state, or mutates Git.
 
 BEHAVIOR
-  Until authoritative DSF Delivery Definition schemas are published, validate
-  fails closed with error.code DELIVERY_ENGINE_NOT_IMPLEMENTED. That is not a
-  successful no-op and is not a schema-validity verdict.
+  Validates Delivery Definition schema v2 structurally, then checks DSF graph
+  invariants. Operational eligibility (start/accept/baseline) is out of scope.
+  Unsupported schema versions fail closed with COMPATIBILITY_UNSUPPORTED.
 
 EXAMPLES
   delivery validate --help

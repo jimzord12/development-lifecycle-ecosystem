@@ -1,0 +1,28 @@
+{
+  "kind": "delivery-milestone",
+  "schemaVersion": 2,
+  "id": "M-002",
+  "title": "M-002 title",
+  "objective": "M-002 objective.",
+  "governingDesignReferences": ["SPEC.md"],
+  "dependsOn": ["M-001"],
+  "acceptanceCriteria": [
+    {
+      "key": "AC-01",
+      "requirement": "M-002 is observably complete."
+    }
+  ],
+  "verification": [
+    {
+      "key": "VR-01",
+      "covers": ["AC-01"],
+      "requirement": "Prove M-002 is complete."
+    }
+  ],
+  "completionEvidence": [
+    {
+      "key": "EV-01",
+      "requirement": "Retain proof for M-002."
+    }
+  ]
+}

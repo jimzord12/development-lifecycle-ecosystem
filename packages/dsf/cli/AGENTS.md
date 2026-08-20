@@ -48,7 +48,7 @@ Required surface: `--help` / `-h`, `--version`, read-only `validate`, `--json` o
 
 The current release implements the DLE universal surface only.
 
-`validate` fails closed with `DELIVERY_ENGINE_NOT_IMPLEMENTED` until authoritative DSF Delivery Definition schemas are published. Domain commands (`phase`, `baseline`, `blocker`, `design-gap`, `init`, `status`, `schema`) are unknown commands, not successful stubs.
+`validate` is a real read-only Definition schema v2 + graph validator. Domain commands (`phase`, `baseline`, `blocker`, `design-gap`, `init`, `status`, `schema`) remain unknown commands, not successful stubs. Do not implement the mutable operational engine in this package until an authoritative CLI-state schema exists.
 
 ## Escalation
 

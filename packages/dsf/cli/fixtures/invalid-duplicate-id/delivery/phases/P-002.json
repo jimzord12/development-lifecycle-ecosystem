@@ -1,0 +1,46 @@
+{
+  "kind": "delivery-phase",
+  "schemaVersion": 2,
+  "id": "P-001",
+  "title": "Duplicate id",
+  "milestoneId": "M-001",
+  "type": "CAPABILITY",
+  "objective": "P-001 objective.",
+  "scope": {
+    "in": ["Work required for P-001."],
+    "out": ["Unrelated later work."]
+  },
+  "fitness": {
+    "coherentOutcome": true,
+    "coherentVerification": true,
+    "boundedContext": true,
+    "manageableDecomposition": true,
+    "rationale": "One independently verifiable outcome."
+  },
+  "governingDesignReferences": ["SPEC.md"],
+  "supportingConceptReferences": [],
+  "repositories": ["app"],
+  "dependsOn": [],
+  "establishesArchitecturalSubsystems": [],
+  "consumesArchitecturalSubsystems": [],
+  "externalPrerequisites": [],
+  "acceptanceCriteria": [
+    {
+      "key": "AC-01",
+      "requirement": "P-001 works."
+    }
+  ],
+  "verification": [
+    {
+      "key": "VR-01",
+      "covers": ["AC-01"],
+      "requirement": "Test P-001."
+    }
+  ],
+  "completionEvidence": [
+    {
+      "key": "EV-01",
+      "requirement": "Keep P-001 evidence."
+    }
+  ]
+}

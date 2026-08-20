@@ -171,6 +171,6 @@ The bootstrap is **not** the completed Delivery semantic engine.
 - generic orchestration/dispatch
 - making the CLI mandatory for DSF consumption
 - introducing `packages/delivery-cli/` as a peer component
-- inventing unpublished Delivery Definition schemas
+- redesigning published Delivery Definition schemas
 - a generic JSON-path mutation API
 - hidden conversational state required for correctness

@@ -78,7 +78,7 @@ describe('DLE CLI Standard V1 conformance', () => {
     expect(result.exitCode).toBe(0);
     expect(result.stderr).toBe('');
     expect(result.stdout).toContain('delivery 0.1.0');
-    expect(result.stdout).toContain('component: dsf 0.1.0');
+    expect(result.stdout).toContain('component: dsf 1.1.1');
     expect(result.stdout).toContain('dleCliStandard: 1');
   });
 
@@ -92,7 +92,7 @@ describe('DLE CLI Standard V1 conformance', () => {
       command: 'version',
       result: {
         cli: { name: 'delivery', version: '0.1.0' },
-        component: { id: 'dsf', version: '0.1.0' },
+        component: { id: 'dsf', version: '1.1.1' },
         dleCliStandard: 1,
       },
       warnings: [],
@@ -125,24 +125,20 @@ describe('DLE CLI Standard V1 conformance', () => {
   });
 
   it('sends human validate errors to stderr and writes nothing', () => {
-    const result = run(['validate']);
+    const result = run(['validate'], { cwd: os.tmpdir() });
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toBe('');
-    expect(result.stderr).toContain(
-      ERROR_CODES.DELIVERY_ENGINE_NOT_IMPLEMENTED,
-    );
+    expect(result.stderr).toContain(ERROR_CODES.VALIDATION_FAILED);
   });
 
   it('emits JSON validate failure on stdout with a non-zero exit', () => {
-    const result = run(['validate', '--json']);
+    const result = run(['validate', '--json'], { cwd: os.tmpdir() });
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toBe('');
     const envelope = parseEnvelope(result.stdout);
     expect(envelope.ok).toBe(false);
     expect(envelope.command).toBe('validate');
-    expect(envelope.error?.code).toBe(
-      ERROR_CODES.DELIVERY_ENGINE_NOT_IMPLEMENTED,
-    );
+    expect(envelope.error?.code).toBe(ERROR_CODES.VALIDATION_FAILED);
     expect(envelope.error?.message).toEqual(expect.any(String));
     expect(envelope.warnings).toEqual([]);
   });

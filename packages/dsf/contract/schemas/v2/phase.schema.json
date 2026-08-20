@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://delivery-framework.invalid/schema/2/phase.schema.json",
+  "title": "Delivery Phase schema v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "schemaVersion",
+    "id",
+    "title",
+    "milestoneId",
+    "type",
+    "objective",
+    "scope",
+    "fitness",
+    "governingDesignReferences",
+    "supportingConceptReferences",
+    "repositories",
+    "dependsOn",
+    "establishesArchitecturalSubsystems",
+    "consumesArchitecturalSubsystems",
+    "externalPrerequisites",
+    "acceptanceCriteria",
+    "verification",
+    "completionEvidence"
+  ],
+  "properties": {
+    "kind": {
+      "const": "delivery-phase"
+    },
+    "schemaVersion": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^P-[0-9]{3,}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "milestoneId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{3,}$"
+    },
+    "type": {
+      "enum": ["CAPABILITY", "FOUNDATION"]
+    },
+    "objective": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in", "out"],
+      "properties": {
+        "in": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "out": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "fitness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coherentOutcome",
+        "coherentVerification",
+        "boundedContext",
+        "manageableDecomposition",
+        "rationale"
+      ],
+      "properties": {
+        "coherentOutcome": {
+          "const": true
+        },
+        "coherentVerification": {
+          "const": true
+        },
+        "boundedContext": {
+          "const": true
+        },
+        "manageableDecomposition": {
+          "const": true
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "repositories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "dependsOn": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^P-[0-9]{3,}$"
+      }
+    },
+    "establishesArchitecturalSubsystems": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^AS-[0-9]{3,}$"
+      }
+    },
+    "consumesArchitecturalSubsystems": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^AS-[0-9]{3,}$"
+      }
+    },
+    "consumedBy": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^P-[0-9]{3,}$"
+      }
+    },
+    "externalPrerequisites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "requirement"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Z]+-[0-9]{2,}$"
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "requirement"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Z]+-[0-9]{2,}$"
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "covers", "requirement"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^VR-[0-9]{2,}$"
+          },
+          "covers": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^AC-[0-9]{2,}$"
+            }
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "completionEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "requirement"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Z]+-[0-9]{2,}$"
+          },
+          "requirement": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "governingDesignReferences": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "supportingConceptReferences": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^concepts/.+/README\\.md$"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "FOUNDATION"
+          }
+        }
+      },
+      "then": {
+        "required": ["consumedBy"],
+        "properties": {
+          "establishesArchitecturalSubsystems": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "CAPABILITY"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": ["consumedBy"]
+        }
+      }
+    }
+  ]
+}

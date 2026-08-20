@@ -19,7 +19,7 @@ Consumers may rely on:
 
 `--version --json` reports CLI identity, owning DSF component id/version, and `dleCliStandard: 1`.
 
-`validate` is read-only. In this bootstrap it fails closed with `DELIVERY_ENGINE_NOT_IMPLEMENTED` because authoritative DSF Delivery Definition schemas are not published yet.
+`validate` is read-only. It discovers `<cwd>/delivery/` and validates Delivery Definition schema v2 plus DSF graph/invariant rules. It does not repair files, create `.cli` state, or answer operational eligibility questions.
 
 Everything else in `src/` is internal.
 

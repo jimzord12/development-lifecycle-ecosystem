@@ -1,0 +1,13 @@
+{
+  "kind": "delivery-framework-release",
+  "version": "1.1.1",
+  "publicConsumerContractVersion": 2,
+  "deliveryDefinitionSchemaVersion": 2,
+  "executionTracking": "external-or-optional-cli",
+  "schemas": [
+    "schemas/v2/roadmap.schema.json",
+    "schemas/v2/milestone.schema.json",
+    "schemas/v2/phase.schema.json",
+    "schemas/v2/design-gap.schema.json"
+  ]
+}

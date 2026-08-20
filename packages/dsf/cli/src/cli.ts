@@ -1,4 +1,3 @@
-import { ERROR_CODES } from './error-codes.js';
 import {
   failureEnvelope,
   renderOutput,
@@ -16,6 +15,8 @@ import {
 } from './identity.js';
 import { parseArgv } from './parse.js';
 import { isSecretKey } from './redact.js';
+import { validateDeliveryDefinition } from './validation/validate-definition.js';
+import type { ValidateOutcome } from './validation/types.js';
 
 export type { RunCliResult };
 
@@ -54,14 +55,8 @@ export function runCli(
       humanText,
     });
   } else if (parsed.kind === 'validate') {
-    const error: CliError = {
-      code: ERROR_CODES.DELIVERY_ENGINE_NOT_IMPLEMENTED,
-      message:
-        'Delivery Definition schema and graph validation is not implemented in this bootstrap release.',
-    };
-    output = renderOutput(failureEnvelope('validate', error), {
-      json: parsed.json,
-    });
+    const cwd = options.cwd ?? process.cwd();
+    output = renderValidate(validateDeliveryDefinition(cwd), parsed.json);
   } else {
     const error: CliError = { code: parsed.code, message: parsed.message };
     if (parsed.details !== undefined) {
@@ -74,6 +69,31 @@ export function runCli(
 
   assertNoSecretEnvLeak(output, options.env);
   return output;
+}
+
+function renderValidate(
+  outcome: ValidateOutcome,
+  json: boolean,
+): ReturnType<typeof renderOutput> {
+  if (outcome.ok) {
+    const result = {
+      valid: true,
+      definitionSchemaVersion: outcome.definitionSchemaVersion,
+      counts: outcome.counts,
+    };
+    const humanText = `Delivery Definition is valid (schema v${String(outcome.definitionSchemaVersion)}).\nmilestones: ${String(outcome.counts.milestones)}\nphases: ${String(outcome.counts.phases)}\ndesignGaps: ${String(outcome.counts.designGaps)}\n`;
+    return renderOutput(successEnvelope('validate', result), {
+      json,
+      humanText,
+    });
+  }
+
+  const error: CliError = {
+    code: outcome.code,
+    message: outcome.message,
+    details: { findings: outcome.findings },
+  };
+  return renderOutput(failureEnvelope('validate', error), { json });
 }
 
 function assertNoSecretEnvLeak(

@@ -40,7 +40,7 @@ describe('synthetic P-001 → DG-001 → P-002 flow', () => {
     const result = run(['validate', '--json']);
     expect(result.exitCode).not.toBe(0);
     expect(parseEnvelope(result.stdout).error?.code).toBe(
-      ERROR_CODES.DELIVERY_ENGINE_NOT_IMPLEMENTED,
+      ERROR_CODES.VALIDATION_FAILED,
     );
     expect(await snapshot(fixtureDirectory)).toEqual(before);
   });

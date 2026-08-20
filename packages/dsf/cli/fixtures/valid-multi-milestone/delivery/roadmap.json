@@ -1,0 +1,11 @@
+{
+  "kind": "delivery-roadmap",
+  "schemaVersion": 2,
+  "title": "Multi-milestone example",
+  "repositories": {
+    "app": {
+      "identity": "example-app"
+    }
+  },
+  "milestoneOrder": ["M-001", "M-002"]
+}

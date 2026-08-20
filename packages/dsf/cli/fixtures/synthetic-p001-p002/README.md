@@ -2,7 +2,7 @@
 
 This fixture preserves the high-value Delivery CLI proof scenario.
 
-It is a test plan, not a substitute for unpublished DSF Delivery Definition schemas. Do not treat files here as schema-valid Definition JSON.
+It is a test plan for the later operational engine. Definition schema v2 fixtures live in sibling directories. Do not treat this folder as a schema-valid Definition.
 
 ## Scenario
 

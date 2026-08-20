@@ -25,7 +25,7 @@
     "node": ">=24.18.0 <25"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node scripts/copy-schemas.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -36,5 +36,8 @@
     "@vitest/coverage-v8": "4.1.10",
     "typescript": "6.0.3",
     "vitest": "4.1.10"
+  },
+  "dependencies": {
+    "ajv": "8.17.1"
   }
 }

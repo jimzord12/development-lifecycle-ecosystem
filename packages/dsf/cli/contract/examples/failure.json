@@ -2,8 +2,8 @@
   "ok": false,
   "command": "validate",
   "error": {
-    "code": "DELIVERY_ENGINE_NOT_IMPLEMENTED",
-    "message": "Delivery Definition schema and graph validation is not implemented in this bootstrap release."
+    "code": "VALIDATION_FAILED",
+    "message": "Delivery Definition validation failed"
   },
   "warnings": []
 }

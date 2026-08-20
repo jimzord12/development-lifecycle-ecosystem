@@ -10,8 +10,8 @@ This repository currently provides:
 
 - the DLE Component Standard V1
 - the DLE CLI Standard V1
-- the DSF first-class component boundary
-- a Delivery CLI bootstrap owned by DSF
+- the DSF first-class component (1.1.1) with Delivery Definition schema v2
+- a DSF-owned Delivery CLI with read-only `delivery validate`
 
 Additional first-class components such as DWF (Design Workspace Framework) and IRS (Implementation Record System) are part of the ecosystem model. Their packages are added only when their contracts are ready. Do not treat co-location in this monorepo as a runtime coupling.
 

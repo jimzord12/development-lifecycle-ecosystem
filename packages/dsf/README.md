@@ -12,8 +12,11 @@ External consumers may rely only on the following surface.
 
 - Manifest: [`dle-component.json`](./dle-component.json)
 - Component id: `dsf` (immutable)
-- Component version: independent SemVer in the manifest (`0.1.0` in this tree)
+- Component version: **1.1.1**
 - Kind: `framework`
+- Delivery Definition schema version: **2**
+- Delivery CLI version: independent (`cli.version` in the manifest, currently `0.1.0`)
+- CLI-state schema version: not published
 
 ### Terminology
 
@@ -22,30 +25,41 @@ Keep these concepts separate:
 1. **Delivery Framework / DSF** — reusable generic rules, contracts, schemas, documentation, and generation model
 2. **Delivery Definition / Delivery Instance** — one project's declarative Roadmap/Milestone/Phase decomposition and associated project Delivery truth
 3. **Delivery CLI** — optional deterministic tooling that validates and, where adopted, operates mutable execution state under DSF/Delivery rules
+4. **CLI-owned mutable execution state** — optional, distinct from Definition truth, not required to consume DSF output
 
-Use **Delivery System** only as an umbrella when all three are intentionally meant together.
+Use **Delivery System** only as an umbrella when those are intentionally meant together.
 
 ### Current public assets
 
-This component currently publishes:
-
 - this README, including this Public Contract
-- `dle-component.json`
+- [`dle-component.json`](./dle-component.json)
+- Delivery Definition schema v2:
+  - [`contract/schemas/v2/roadmap.schema.json`](./contract/schemas/v2/roadmap.schema.json)
+  - [`contract/schemas/v2/milestone.schema.json`](./contract/schemas/v2/milestone.schema.json)
+  - [`contract/schemas/v2/phase.schema.json`](./contract/schemas/v2/phase.schema.json)
+  - [`contract/schemas/v2/design-gap.schema.json`](./contract/schemas/v2/design-gap.schema.json)
+- contract index: [`contract/README.md`](./contract/README.md)
+- release metadata: [`contract/release.json`](./contract/release.json)
 - the optional companion CLI relationship `cli.name = "delivery"` / `cli.version` in the manifest
-- the Delivery CLI bootstrap under [`cli/`](./cli/), which is **not** a first-class DLE Component
+- the Delivery CLI under [`cli/`](./cli/), which is **not** a first-class DLE Component
 
-Authoritative DSF Delivery Definition schemas are not published in this repository yet. Do not treat unpublished, inferred, or example-only JSON as a stable DSF schema.
+Supported public artifact types:
 
-When concrete public schemas or formats are accepted, they will be declared here and may live under `contract/`. Until then, that directory is intentionally absent.
+| Artifact   | Location                         |
+| ---------- | -------------------------------- |
+| Roadmap    | `delivery/roadmap.json`          |
+| Milestone  | `delivery/milestones/M-*.json`   |
+| Phase      | `delivery/phases/P-*.json`       |
+| Design Gap | `delivery/design-gaps/DG-*.json` |
 
 ### Compatibility and version axes
 
 Do not conflate:
 
-1. DSF/component version
-2. Delivery Definition schema version
-3. Delivery CLI version
-4. CLI-state schema version
+1. DSF/component version (`1.1.1`)
+2. Delivery Definition schema version (`2`)
+3. Delivery CLI version (independent)
+4. CLI-state schema version (unpublished)
 
 They are independent compatibility axes.
 
@@ -67,13 +81,11 @@ The Delivery CLI is subordinate to DSF:
 packages/dsf/cli/
 ```
 
-The CLI has its own technical package, executable (`delivery`), and independent SemVer. Parent component and CLI versions do not need synchronized bumps.
-
-The CLI conforms to [DLE CLI Standard V1](../../docs/standards/dle-cli-standard-v1.md) for the universal surface (`--help`, `--version`, `validate`, `--json`). Delivery domain commands are specified in the CLI PRD/SPEC and are not all implemented in the current bootstrap.
+`delivery validate` is the read-only schema and graph/invariant validator for Definition schema v2. It does not answer operational eligibility questions.
 
 ### Deterministic validation
 
-Consumers must be able to determine structural validity of public DSF artifacts without conversational judgment. While Delivery Definition schemas are unpublished, the companion CLI `validate` command exists as the DLE-required read-only entrypoint and fails closed rather than inventing schema semantics.
+Consumers can determine structural validity of public Delivery Definition artifacts against the published v2 schemas without conversational judgment. Graph/reference invariants are enforced by `delivery validate` after schema validation.
 
 ### Private by default
 
@@ -85,6 +97,10 @@ Everything not listed in this Public Contract is internal. Monorepo co-location 
 packages/dsf/
 ├── dle-component.json
 ├── README.md
+├── contract/
+│   ├── README.md
+│   ├── release.json
+│   └── schemas/v2/
 └── cli/                 # subordinate Delivery CLI
 ```
 

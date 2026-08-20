@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://delivery-framework.invalid/schema/2/design-gap.schema.json",
+  "title": "Delivery Design Gap schema v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "schemaVersion",
+    "id",
+    "phaseId",
+    "implementationContext",
+    "observedReality",
+    "governingDesignReferences",
+    "authorityProblem",
+    "resolutionRequired",
+    "evidence",
+    "recommendation",
+    "resolution"
+  ],
+  "properties": {
+    "kind": {
+      "const": "design-gap"
+    },
+    "schemaVersion": {
+      "const": 2
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^DG-[0-9]{3,}$"
+    },
+    "phaseId": {
+      "type": "string",
+      "pattern": "^P-[0-9]{3,}$"
+    },
+    "implementationContext": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observedReality": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authorityProblem": {
+      "type": "string",
+      "minLength": 1
+    },
+    "resolutionRequired": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "recommendation": {
+      "type": ["string", "null"]
+    },
+    "resolution": {
+      "type": ["object", "null"],
+      "required": ["references", "summary"],
+      "properties": {
+        "references": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "governingDesignReferences": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}
