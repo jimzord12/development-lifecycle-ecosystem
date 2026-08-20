@@ -9,13 +9,15 @@ Thanks for contributing to the Development Lifecycle Ecosystem.
 
 ## Workflow
 
-1. Create a short-lived branch from `main`.
+1. Work on `main`.
 2. Install with `pnpm install --frozen-lockfile`.
 3. Make a focused change that stays framework-generic.
 4. Run `pnpm validate`.
-5. Open a pull request describing the change and its rationale.
+5. Commit the intended files on `main` and push `main` to the remote.
 
-Normal changes are merged through pull requests. The intended repository policy is squash merge, linear history, resolved review conversations, required `validate` CI, and automatic deletion of merged branches.
+Do not open pull requests. Completed work must not stay uncommitted or unpushed.
+
+`validate` CI still runs on pushes to `main`.
 
 ## Changesets
 
