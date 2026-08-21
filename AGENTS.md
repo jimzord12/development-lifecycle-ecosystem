@@ -10,6 +10,8 @@ Do not add private company material, credentials, private repository identities,
 
 Treat checked-in specifications, decision records, schemas, fixtures, and tests as authoritative for the behavior they explicitly define. Do not invent missing semantic contracts. When required behavior is underspecified or contradictory, stop that behavior-changing work and surface the gap clearly.
 
+Drafts under [`docs/proposals/`](./docs/proposals/) are discussion material only. They are not accepted contracts. Do not implement from a proposal, and do not treat a proposal as overriding a published standard. Acceptance means the substance is promoted into a standard, schema, fixture, test, or decision record.
+
 ## Architecture
 
 - DLE is an umbrella, not a mandatory shared runtime.

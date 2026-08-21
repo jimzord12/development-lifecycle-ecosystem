@@ -35,4 +35,6 @@ This is a public framework repository. Do not contribute credentials, private co
 
 If a required semantic contract is missing, raise the gap instead of guessing behavior.
 
+Discussion drafts may be added under [`docs/proposals/`](./docs/proposals/). They are not accepted contracts. Do not implement from a proposal until its substance is promoted into a standard, schema, fixture, test, or decision record.
+
 First-class DLE Components belong under `packages/<component-id>/`. Companion CLIs belong under their parent component. Do not add Delivery CLI as a peer of DSF.
