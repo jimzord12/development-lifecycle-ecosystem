@@ -15,8 +15,8 @@ Drafts under [`docs/proposals/`](./docs/proposals/) are discussion material only
 ## Architecture
 
 - DLE is an umbrella, not a mandatory shared runtime.
-- First-class components occupy `packages/<component-id>/` with `dle-component.json` and a README Public Contract.
-- Cross-component dependencies are directional and contract-only. Monorepo co-location grants no permission to import internals.
+- First-class components occupy `packages/<component-id>/` with `dle-component.json` and a README Public Contract. Current hosted components: `packages/dwf`, `packages/dsf`, `packages/implementation-record-system`.
+- Cross-component dependencies are directional and contract-only. Monorepo co-location grants no permission to import internals. IRS may consume DSF public Delivery meaning only; DWF may prepare packages that pin DSF/DWF `.framework/` releases. Do not import component internals.
 - Companion CLIs are owned by their parent component. Delivery CLI lives at `packages/dsf/cli/` and must not be introduced as `packages/delivery-cli/`.
 - Follow [DLE Component Standard V1](./docs/standards/dle-component-standard-v1.md) and [DLE CLI Standard V1](./docs/standards/dle-cli-standard-v1.md).
 - Package-local `AGENTS.md` files override this file only for that package. The nearest applicable file wins.

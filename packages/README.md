@@ -10,7 +10,7 @@ packages/<component-id>/
 └── README.md
 ```
 
-A component root is a lifecycle/product ownership boundary. It does not have to be a Node package.
+A component root is a lifecycle/product ownership boundary. It does not have to be a Node package. `packages/dwf` and `packages/implementation-record-system` are markdown/JSON/skill roots. `packages/dsf` owns schemas plus the Node Delivery CLI under `packages/dsf/cli`.
 
 ## Implementation packages
 

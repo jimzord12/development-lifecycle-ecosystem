@@ -1,6 +1,6 @@
 # Delivery CLI fixtures
 
-Schema-backed generic Delivery Definition fixtures. They are not ICS/product examples and they do not include CLI-owned execution state.
+Schema-backed generic Delivery Definition fixtures. They are not project-specific product examples and they do not include CLI-owned execution state.
 
 | Fixture                      | Purpose                                  |
 | ---------------------------- | ---------------------------------------- |
