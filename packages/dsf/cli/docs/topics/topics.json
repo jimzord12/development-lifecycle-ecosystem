@@ -26,16 +26,22 @@
       "order": 22
     },
     {
+      "id": "definition.milestone.review",
+      "title": "Milestone Review",
+      "file": "definition.milestone.review.md",
+      "order": 23
+    },
+    {
       "id": "definition.phase",
       "title": "Phase",
       "file": "definition.phase.md",
-      "order": 23
+      "order": 24
     },
     {
       "id": "definition.design-gap",
       "title": "Design Gap",
       "file": "definition.design-gap.md",
-      "order": 24
+      "order": 25
     },
     {
       "id": "validation",
@@ -61,6 +67,12 @@
       "summary": "Understand the independent DSF, Definition schema, CLI, and CLI-state version axes.",
       "file": "compatibility.md",
       "order": 40
+    },
+    {
+      "id": "tracking",
+      "title": "Tracking and execution",
+      "file": "tracking.md",
+      "order": 45
     },
     {
       "id": "authority",

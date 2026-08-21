@@ -1,6 +1,6 @@
 # Schema validation
 
-Schema validation is structural JSON Schema Draft 2020-12 checking of Roadmap, Milestone, Phase, and Design-Gap artifacts against the published DSF 1.1.1 v2 schemas.
+Schema validation is structural JSON Schema Draft 2020-12 checking of Roadmap, Milestone, Phase, and Design-Gap artifacts against the published DSF 1.2.0 v2 schemas.
 
 The CLI compiles those schemas with Ajv 8.17.1. Packaged installs use bundled copies under `dist/schemas/v2`; they do not require the development monorepo `packages/dsf/contract` tree.
 

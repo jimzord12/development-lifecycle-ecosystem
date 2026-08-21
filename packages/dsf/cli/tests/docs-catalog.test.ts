@@ -59,12 +59,14 @@ describe('docs catalog integrity', () => {
       'definition',
       'definition.roadmap',
       'definition.milestone',
+      'definition.milestone.review',
       'definition.phase',
       'definition.design-gap',
       'validation',
       'validation.schema',
       'validation.graph',
       'compatibility',
+      'tracking',
       'authority',
     ]);
   });

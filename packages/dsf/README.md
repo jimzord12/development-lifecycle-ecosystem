@@ -12,8 +12,9 @@ External consumers may rely only on the following surface.
 
 - Manifest: [`dle-component.json`](./dle-component.json)
 - Component id: `dsf` (immutable)
-- Component version: **1.1.1**
+- Component version: **1.2.0**
 - Kind: `framework`
+- Public consumer contract version: **3**
 - Delivery Definition schema version: **2**
 - Delivery CLI version: independent (`cli.version` in the manifest, currently `0.1.0`)
 - CLI-state schema version: not published
@@ -24,8 +25,10 @@ Keep these concepts separate:
 
 1. **Delivery Framework / DSF** — reusable generic rules, contracts, schemas, documentation, and generation model
 2. **Delivery Definition / Delivery Instance** — one project's declarative Roadmap/Milestone/Phase decomposition and associated project Delivery truth
-3. **Delivery CLI** — optional deterministic tooling that validates and, where adopted, operates mutable execution state under DSF/Delivery rules
-4. **CLI-owned mutable execution state** — optional, distinct from Definition truth, not required to consume DSF output
+3. **Milestone Review** — one derived first-class execution node, such as `M-001::REVIEW`, that proves the integrated Milestone before it closes
+4. **Milestone Remediation** — derived corrective work, such as `M-001::FIX-001`, created by a Review or later repair without becoming an authored Phase
+5. **Delivery CLI** — optional deterministic tooling that validates and, where adopted, operates mutable execution state under DSF/Delivery rules
+6. **CLI-owned mutable execution state** — optional, distinct from Definition truth, not required to consume DSF output
 
 Use **Delivery System** only as an umbrella when those are intentionally meant together.
 
@@ -39,6 +42,7 @@ Use **Delivery System** only as an umbrella when those are intentionally meant t
   - [`contract/schemas/v2/phase.schema.json`](./contract/schemas/v2/phase.schema.json)
   - [`contract/schemas/v2/design-gap.schema.json`](./contract/schemas/v2/design-gap.schema.json)
 - contract index: [`contract/README.md`](./contract/README.md)
+- deeper DSF documentation: [`contract/docs/README.md`](./contract/docs/README.md)
 - release metadata: [`contract/release.json`](./contract/release.json)
 - the optional companion CLI relationship `cli.name = "delivery"` / `cli.version` in the manifest
 - the Delivery CLI under [`cli/`](./cli/), which is **not** a first-class DLE Component
@@ -56,7 +60,7 @@ Supported public artifact types:
 
 Do not conflate:
 
-1. DSF/component version (`1.1.1`)
+1. DSF/component version (`1.2.0`)
 2. Delivery Definition schema version (`2`)
 3. Delivery CLI version (independent)
 4. CLI-state schema version (unpublished)
@@ -71,6 +75,7 @@ They are independent compatibility axes.
 - The CLI is a safer operator/validation surface, not a source of design truth.
 - Mutable CLI execution state is not Delivery Definition truth.
 - Canonical structural validation and operational eligibility are distinct concepts.
+- Milestone Review and Remediation are derived from authored Definition truth. They do not add authored JSON kinds or change schema v2.
 - Design Gaps are not resolved by CLI invention; authority remains with the accepted human/design process.
 
 ### Companion CLI
@@ -100,6 +105,7 @@ packages/dsf/
 ├── contract/
 │   ├── README.md
 │   ├── release.json
+│   ├── docs/
 │   └── schemas/v2/
 └── cli/                 # subordinate Delivery CLI
 ```

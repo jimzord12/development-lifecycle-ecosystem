@@ -1,6 +1,6 @@
 # Delivery CLI overview
 
-The Delivery CLI is an optional companion CLI owned by DSF. Its executable name is `delivery`. Package identity is `@dle/delivery-cli`, currently `0.1.0`. Owning component identity is DSF `1.1.1`. DLE CLI Standard identity is integer `1`.
+The Delivery CLI is an optional companion CLI owned by DSF. Its executable name is `delivery`. Package identity is `@dle/delivery-cli`, currently `0.1.0`. Owning component identity is DSF `1.2.0`. DLE CLI Standard identity is integer `1`.
 
 Keep these concepts separate:
 

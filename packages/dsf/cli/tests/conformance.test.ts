@@ -79,7 +79,7 @@ describe('DLE CLI Standard V1 conformance', () => {
     expect(result.exitCode).toBe(0);
     expect(result.stderr).toBe('');
     expect(result.stdout).toContain('delivery 0.1.0');
-    expect(result.stdout).toContain('component: dsf 1.1.1');
+    expect(result.stdout).toContain('component: dsf 1.2.0');
     expect(result.stdout).toContain('dleCliStandard: 1');
   });
 
@@ -93,7 +93,7 @@ describe('DLE CLI Standard V1 conformance', () => {
       command: 'version',
       result: {
         cli: { name: 'delivery', version: '0.1.0' },
-        component: { id: 'dsf', version: '1.1.1' },
+        component: { id: 'dsf', version: '1.2.0' },
         dleCliStandard: 1,
       },
       warnings: [],

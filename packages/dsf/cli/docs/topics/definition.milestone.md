@@ -10,4 +10,6 @@ Graph validation requires:
 - no Milestone dependency cycles
 - verification `covers` keys to name acceptance-criteria keys on the same Milestone
 
+Each Milestone also implies one derived `M-XXX::REVIEW` node after member Phases complete and integrate. See `definition.milestone.review`. Milestone `dependsOn` controls Review and closure order. It does not block later Phase implementation.
+
 Milestone domain commands are not implemented. This topic describes the Definition artifact, not an executable `milestone` command.

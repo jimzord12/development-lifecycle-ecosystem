@@ -2,7 +2,7 @@
 
 DSF uses four independent version axes:
 
-1. DSF / component SemVer (`1.1.1`)
+1. DSF / component SemVer (`1.2.0`)
 2. Delivery Definition schema version (`2`)
 3. Delivery CLI SemVer (independent; currently `0.1.0`)
 4. CLI-state schema version (unpublished)

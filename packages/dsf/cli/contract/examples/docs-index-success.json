@@ -22,6 +22,10 @@
         "title": "Milestone"
       },
       {
+        "id": "definition.milestone.review",
+        "title": "Milestone Review"
+      },
+      {
         "id": "definition.phase",
         "title": "Phase"
       },
@@ -45,6 +49,10 @@
         "id": "compatibility",
         "title": "Compatibility",
         "summary": "Understand the independent DSF, Definition schema, CLI, and CLI-state version axes."
+      },
+      {
+        "id": "tracking",
+        "title": "Tracking and execution"
       },
       {
         "id": "authority",

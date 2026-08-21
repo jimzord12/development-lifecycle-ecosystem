@@ -12,12 +12,15 @@ const PHRASES = {
   definition: 'declarative project truth under delivery/',
   roadmap: 'Roadmap artifact is delivery/roadmap.json',
   milestone: 'Milestone identifiers match M-',
+  milestoneReview:
+    'Every Milestone implies one derived first-class Review node',
   phase: 'Phase identifiers match P-',
   designGap: 'Design Gaps remain human/design-authority decisions',
   validation: 'validate does not mean ready to start',
   schema: 'structural JSON Schema Draft 2020-12 checking',
   graph: 'reference existence, identifier uniqueness, and dependency cycles',
   compatibility: 'four independent version axes',
+  tracking: 'Do not mutate Delivery Definition files merely to record progress',
   authority: 'docs is a retrieval surface, not a new source of truth',
 } as const;
 
@@ -26,12 +29,14 @@ const ROOT_TOPIC_IDS = [
   'definition',
   'definition.roadmap',
   'definition.milestone',
+  'definition.milestone.review',
   'definition.phase',
   'definition.design-gap',
   'validation',
   'validation.schema',
   'validation.graph',
   'compatibility',
+  'tracking',
   'authority',
 ] as const;
 
@@ -285,6 +290,7 @@ describe('delivery docs', () => {
       'definition',
       'definition.roadmap',
       'definition.milestone',
+      'definition.milestone.review',
       'definition.phase',
       'definition.design-gap',
     ]);

@@ -188,7 +188,7 @@ Pipeline:
 3. discover `<cwd>/delivery/`
 4. if any parsed `schemaVersion` number is not `2`, fail with `COMPATIBILITY_UNSUPPORTED`
 5. structurally validate against published v2 schemas
-6. validate references/graph/invariants from the DSF 1.1.1 contract
+6. validate references/graph/invariants from the DSF 1.2.0 contract
 7. report sorted findings without repair
 
 JSON success `result` includes `valid`, `definitionSchemaVersion`, and `counts`. JSON failure `error.details.findings` is the finding array.

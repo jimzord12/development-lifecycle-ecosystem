@@ -11,6 +11,8 @@ Supported public artifact types:
 | Phase      | `delivery/phases/P-*.json`       |
 | Design Gap | `delivery/design-gaps/DG-*.json` |
 
-Authoritative schema version is **2**. See `definition.roadmap`, `definition.milestone`, `definition.phase`, and `definition.design-gap`.
+Authoritative schema version is **2**. See `definition.roadmap`, `definition.milestone`, `definition.milestone.review`, `definition.phase`, and `definition.design-gap`.
+
+The executable projection also contains derived `M-XXX::REVIEW` and `M-XXX::FIX-NNN` nodes. Those identities are not extra authored JSON files.
 
 `delivery validate` and `delivery docs` do not mutate Definition files. Direct consumption without the CLI is allowed and does not imply arbitrary raw JSON mutation. CLI-owned state, when a later release adopts it, lives under `delivery/.cli/` and is not reclassified as Definition truth.
