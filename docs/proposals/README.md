@@ -31,6 +31,7 @@ If a proposal conflicts with a published standard, the standard wins until an ex
 
 ## Current drafts
 
+- [IRS default router invocation](./irs-default-router-invocation.md) — read-only orientation and next-safe-action recommendation when IRS is invoked without an operation
 - [DLE Host CLI](./dle-host-cli.md) — optional umbrella operator vs companion CLIs
 - [DLE exclusive distro and composition](./dle-exclusive-distro.md) — curated catalog, pin/install doctrine, OS matrix
 - [Deno as the DLE Host CLI compile target](./dle-host-cli-deno.md) — TypeScript + Deno compile; not Bun; `delivery` stays Node
