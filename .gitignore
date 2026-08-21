@@ -6,3 +6,6 @@ coverage/
 !.env.example
 .DS_Store
 *.log
+
+# Local extracted Design Workspace. Never commit project design trees.
+workspace-migration/
