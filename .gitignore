@@ -6,6 +6,8 @@ coverage/
 !.env.example
 .DS_Store
 *.log
+__pycache__/
+*.py[cod]
 
 # Local extracted Design Workspace. Never commit project design trees.
 workspace-migration/
