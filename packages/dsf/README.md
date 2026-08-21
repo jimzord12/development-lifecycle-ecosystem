@@ -81,7 +81,7 @@ The Delivery CLI is subordinate to DSF:
 packages/dsf/cli/
 ```
 
-`delivery validate` is the read-only schema and graph/invariant validator for Definition schema v2. It does not answer operational eligibility questions.
+`delivery validate` is the read-only schema and graph/invariant validator for Definition schema v2. It does not answer operational eligibility questions. `delivery docs` is the read-only agent-oriented documentation retrieval command for the installed CLI contract.
 
 ### Deterministic validation
 

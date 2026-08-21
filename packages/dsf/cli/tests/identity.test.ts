@@ -60,4 +60,31 @@ describe('compiled identity and catalogues', () => {
     const result = run(['--version', '--json']);
     expect(parseEnvelope(result.stdout)).toEqual(example);
   });
+
+  it('matches the checked-in docs example fixtures', () => {
+    const cases: Array<{ file: string; argv: string[] }> = [
+      { file: 'docs-index-success.json', argv: ['docs', '--json'] },
+      {
+        file: 'docs-topic-success.json',
+        argv: ['docs', 'validation', '--json'],
+      },
+      {
+        file: 'docs-all-success.json',
+        argv: ['docs', 'validation', '--all', '--json'],
+      },
+      {
+        file: 'docs-topic-not-found.json',
+        argv: ['docs', 'does.not.exist', '--json'],
+      },
+    ];
+    for (const item of cases) {
+      const example = JSON.parse(
+        readFileSync(
+          path.join(here, '../contract/examples', item.file),
+          'utf8',
+        ),
+      ) as unknown;
+      expect(parseEnvelope(run(item.argv).stdout)).toEqual(example);
+    }
+  });
 });

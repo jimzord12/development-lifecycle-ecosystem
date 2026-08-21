@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "command": "docs",
+  "result": {
+    "mode": "index",
+    "scope": null,
+    "topics": [
+      {
+        "id": "overview",
+        "title": "Delivery CLI overview"
+      },
+      {
+        "id": "definition",
+        "title": "Delivery Definition"
+      },
+      {
+        "id": "definition.roadmap",
+        "title": "Roadmap"
+      },
+      {
+        "id": "definition.milestone",
+        "title": "Milestone"
+      },
+      {
+        "id": "definition.phase",
+        "title": "Phase"
+      },
+      {
+        "id": "definition.design-gap",
+        "title": "Design Gap"
+      },
+      {
+        "id": "validation",
+        "title": "Validation"
+      },
+      {
+        "id": "validation.schema",
+        "title": "Schema validation"
+      },
+      {
+        "id": "validation.graph",
+        "title": "Graph validation"
+      },
+      {
+        "id": "compatibility",
+        "title": "Compatibility",
+        "summary": "Understand the independent DSF, Definition schema, CLI, and CLI-state version axes."
+      },
+      {
+        "id": "authority",
+        "title": "Authority and sources of truth"
+      }
+    ]
+  },
+  "warnings": []
+}

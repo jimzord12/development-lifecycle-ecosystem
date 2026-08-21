@@ -5,7 +5,14 @@ import {
   type CliError,
   type RunCliResult,
 } from './envelope.js';
-import { TOP_LEVEL_HELP, VALIDATE_HELP } from './help.js';
+import { runDocs } from './docs/load.js';
+import type { DocsQueryResult } from './docs/query.js';
+import {
+  renderAllHuman,
+  renderIndexHuman,
+  renderTopicHuman,
+} from './docs/render.js';
+import { DOCS_HELP, TOP_LEVEL_HELP, VALIDATE_HELP } from './help.js';
 import {
   CLI_NAME,
   CLI_VERSION,
@@ -35,7 +42,12 @@ export function runCli(
   let output: RunCliResult;
 
   if (parsed.kind === 'help') {
-    const text = parsed.topic === 'validate' ? VALIDATE_HELP : TOP_LEVEL_HELP;
+    const text =
+      parsed.topic === 'validate'
+        ? VALIDATE_HELP
+        : parsed.topic === 'docs'
+          ? DOCS_HELP
+          : TOP_LEVEL_HELP;
     output = renderOutput(
       successEnvelope('help', { topic: parsed.topic, text }),
       {
@@ -57,6 +69,12 @@ export function runCli(
   } else if (parsed.kind === 'validate') {
     const cwd = options.cwd ?? process.cwd();
     output = renderValidate(validateDeliveryDefinition(cwd), parsed.json);
+  } else if (parsed.kind === 'docs') {
+    const request =
+      parsed.topic === undefined
+        ? { mode: parsed.mode }
+        : { mode: parsed.mode, topic: parsed.topic };
+    output = renderDocs(runDocs(request), parsed.json);
   } else {
     const error: CliError = { code: parsed.code, message: parsed.message };
     if (parsed.details !== undefined) {
@@ -69,6 +87,52 @@ export function runCli(
 
   assertNoSecretEnvLeak(output, options.env);
   return output;
+}
+
+function renderDocs(
+  outcome: DocsQueryResult,
+  json: boolean,
+): ReturnType<typeof renderOutput> {
+  if (!outcome.ok) {
+    return renderOutput(
+      failureEnvelope('docs', {
+        code: outcome.code,
+        message: outcome.message,
+        details: outcome.details,
+      }),
+      { json },
+    );
+  }
+
+  if (outcome.mode === 'index') {
+    return renderOutput(
+      successEnvelope('docs', {
+        mode: 'index',
+        scope: outcome.scope,
+        topics: outcome.topics,
+      }),
+      { json, humanText: renderIndexHuman(outcome.topics) },
+    );
+  }
+
+  if (outcome.mode === 'topic') {
+    return renderOutput(
+      successEnvelope('docs', {
+        mode: 'topic',
+        topic: outcome.topic,
+      }),
+      { json, humanText: renderTopicHuman(outcome.topic) },
+    );
+  }
+
+  return renderOutput(
+    successEnvelope('docs', {
+      mode: 'all',
+      scope: outcome.scope,
+      topics: outcome.topics,
+    }),
+    { json, humanText: renderAllHuman(outcome.topics) },
+  );
 }
 
 function renderValidate(

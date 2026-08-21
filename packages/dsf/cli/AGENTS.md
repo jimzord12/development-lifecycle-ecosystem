@@ -22,13 +22,14 @@ If these conflict, stop and surface the contradiction. Do not invent Delivery se
 
 ## DLE CLI conformance
 
-Required surface: `--help` / `-h`, `--version`, read-only `validate`, `--json` on every result-producing command.
+Required surface: `--help` / `-h`, `--version`, read-only `validate`, read-only `docs`, `--json` on every result-producing command.
 
 - Non-interactive by default. No prompts. No implicit stdin reads. No typo guessing.
 - Human output default; `--json` is exactly one UTF-8 JSON document plus newline.
 - Normal JSON failures go to stdout with non-zero exit.
 - Branch on `error.code`, never on `error.message`.
-- No universal `--quiet`, `--verbose`, `--debug`, `--force`, `--yes`, config file, `status`, `docs`, or `doctor`.
+- Help explains invocation; docs explains the Delivery mental model.
+- No universal `--quiet`, `--verbose`, `--debug`, `--force`, `--yes`, config file, `status`, or `doctor`.
 
 ## Frozen Delivery invariants
 
@@ -48,7 +49,7 @@ Required surface: `--help` / `-h`, `--version`, read-only `validate`, `--json` o
 
 The current release implements the DLE universal surface only.
 
-`validate` is a real read-only Definition schema v2 + graph validator. Domain commands (`phase`, `baseline`, `blocker`, `design-gap`, `init`, `status`, `schema`) remain unknown commands, not successful stubs. Do not implement the mutable operational engine in this package until an authoritative CLI-state schema exists.
+`validate` is a real read-only Definition schema v2 + graph validator. `docs` is a real read-only packaged documentation retrieval command. Domain commands (`phase`, `baseline`, `blocker`, `design-gap`, `init`, `status`, `schema`) remain unknown commands, not successful stubs. Do not implement the mutable operational engine in this package until an authoritative CLI-state schema exists. Do not invent operational semantics in `docs` topics.
 
 ## Escalation
 

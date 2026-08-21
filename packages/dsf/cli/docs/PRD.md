@@ -67,6 +67,7 @@ DLE CLI Standard V1 requires:
 | `--help` / `-h` | Deterministic help; exit 0; no prompt/pager                     |
 | `--version`     | CLI + owning component identity                                 |
 | `validate`      | Read-only schema/graph/invariant validation. No repair/mutation |
+| `docs`          | Read-only documentation retrieval. Compact index by default     |
 | `--json`        | JSON-only machine result for every result-producing command     |
 
 Delivery domain families remain component-owned. This table is semantic orientation, not permission to invent missing DSF schema details:
@@ -90,9 +91,11 @@ Delivery domain families remain component-owned. This table is semantic orientat
 | `schema status`                 | Read-only compatibility report                                                                   |
 | `schema migrate`                | Explicit supported forward atomic migration; refuse unknown write semantics                      |
 
-Delivery-specific `--docs` may exist later to explain the Delivery mental model. `--docs` is not a universal DLE CLI requirement.
+`docs` is part of the DLE universal surface and is implemented. It is read-only: it does not mutate Definition or `.cli` state, resolve Design Gaps, or imply that the mutable operational engine is implemented. Topics may describe accepted public-contract concepts even where a future mutating command is still unimplemented, and they must distinguish those concepts from currently executable commands.
 
-**Bootstrap scope:** only the DLE universal surface is implemented as executable behavior. Domain families are specified here and in the Technical Spec so a later implementation agent can add them from authoritative DSF contracts without inventing semantics.
+Do not use docs to fake successful implementation of `phase`, `baseline`, `design-gap`, or similar domain families. The retired Delivery-specific `--docs` flag is not part of the public interface; use `delivery docs`.
+
+**Bootstrap scope:** the DLE universal surface (`--help`, `--version`, `validate`, `docs`, `--json`) is implemented as executable behavior. Domain families remain specified so a later implementation agent can add them from authoritative DSF contracts without inventing semantics.
 
 ## Non-interactive behavior
 
@@ -111,10 +114,10 @@ Automation branches on `error.code`, not on `error.message` or a DLE-wide numeri
 
 Exit `0` means success. Non-zero means failure.
 
-## Help vs Delivery-specific semantic docs
+## Help vs semantic docs
 
 - `--help` / `-h` document invocation: arguments, defaults, side effects, examples.
-- Delivery-specific `--docs`, if added, explain the Delivery mental model. It is not a substitute for `--help` and is not required by DLE CLI Standard V1.
+- `docs` explains the Delivery mental model. It is not a substitute for `--help`.
 
 ## Compatibility expectations
 
@@ -151,7 +154,7 @@ Design Gaps remain human/design-authority decisions. The CLI must not invent pro
 
 The bootstrap is accepted when:
 
-- DLE CLI Standard V1 universal surface is executable (`--help`, `--version`, `validate`, `--json`)
+- DLE CLI Standard V1 universal surface is executable (`--help`, `--version`, `validate`, `docs`, `--json`)
 - JSON success/failure envelopes parse as specified
 - `validate` is read-only
 - `--version --json` exposes CLI name/version, DSF id/version, and `dleCliStandard: 1`

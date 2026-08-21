@@ -5,5 +5,6 @@
   "INVALID_INVOCATION": "A known command was invoked with malformed arguments or an incompatible flag combination.",
   "DELIVERY_ENGINE_NOT_IMPLEMENTED": "Reserved for Delivery domain/engine operations that are not implemented yet. Not used by read-only validate for Definition schema v2.",
   "VALIDATION_FAILED": "Reserved for real schema/graph/invariant validation failure once the Delivery engine exists.",
-  "COMPATIBILITY_UNSUPPORTED": "The CLI cannot safely operate on the target artifact or version. Must be raised before semantic mutation."
+  "COMPATIBILITY_UNSUPPORTED": "The CLI cannot safely operate on the target artifact or version. Must be raised before semantic mutation.",
+  "DOCS_TOPIC_NOT_FOUND": "The requested canonical documentation topic ID does not exist."
 }

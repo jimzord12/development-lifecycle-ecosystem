@@ -2,7 +2,7 @@
 
 Implementation contract for the DSF-owned Delivery CLI.
 
-This spec is precise enough to implement the DLE CLI Standard V1 universal surface now, and to add Delivery domain commands later **without inventing unpublished DSF schema semantics**.
+This spec is precise enough to implement the DLE CLI Standard V1 universal surface, including `docs`, and to add Delivery domain commands later **without inventing unpublished DSF schema semantics**.
 
 Where an internal implementation choice is delegated, it is marked **Delegated**.
 
@@ -71,13 +71,14 @@ Bootstrap: no write-oriented Delivery commands are implemented. `assertWriteComp
 | `delivery <command> --help` | command is known              | none             | exit 0; command help                                                                          |
 | `delivery --version`        | none                          | none             | identity                                                                                      |
 | `delivery validate`         | `delivery/` under process CWD | none (read-only) | schema v2 + graph/invariant validation; `COMPATIBILITY_UNSUPPORTED` for other schema versions |
+| `delivery docs`             | none                          | none (read-only) | packaged documentation retrieval; cwd-independent; see §17                                    |
 | `--json` on the above       | none                          | none             | one JSON envelope + newline                                                                   |
 
 No-args `delivery` is a missing-command failure (`MISSING_COMMAND`), not implied help.
 
 ### Specified, not implemented
 
-Domain families listed in the PRD (`status`, `init`, `phase *`, `milestone *`, `blocker *`, `design-gap *`, `baseline *`, `schema *`, Delivery `--docs`) are **unknown commands** in this bootstrap. Do not stub them as successful no-ops.
+Domain families listed in the PRD (`status`, `init`, `phase *`, `milestone *`, `blocker *`, `design-gap *`, `baseline *`, `schema *`) are **unknown commands**. Do not stub them as successful no-ops. The retired Delivery-specific `--docs` flag is not implemented and is not an alias for `docs`.
 
 When implemented later, each mutating command must:
 
@@ -172,6 +173,7 @@ Stable codes are catalogued in [`../contract/error-codes.json`](../contract/erro
 | `DELIVERY_ENGINE_NOT_IMPLEMENTED` | reserved for unimplemented Delivery domain/engine commands                      |
 | `VALIDATION_FAILED`               | Definition discovery, JSON, schema, or graph/invariant failure                  |
 | `COMPATIBILITY_UNSUPPORTED`       | target artifact/version cannot be operated on safely; must fire before mutation |
+| `DOCS_TOPIC_NOT_FOUND`            | well-formed canonical documentation topic id does not exist                     |
 
 Do not create a DLE-wide numeric error taxonomy. Exit is `0` or non-zero only.
 
@@ -250,10 +252,11 @@ This bootstrap performs no Git operations.
 ## 14. Packaging
 
 - `pnpm` workspace member: `packages/dsf/cli`
-- Build: `tsc -p tsconfig.json` → `dist/`
+- Build: `tsc -p tsconfig.json` → `dist/`, then copy Definition schemas to `dist/schemas/v2` and docs topics to `dist/docs/topics`
 - Tests: Vitest
 - Shebang on `src/bin.ts`: `#!/usr/bin/env node`
 - `files`: `dist` plus package documentation needed to consume the binary
+- Packaged `delivery docs` must work without repository-local `packages/dsf/...` paths
 
 **Delegated:** no extra CLI framework (no Commander/Yargs). Argv parsing is a small local parser.
 
@@ -261,7 +264,7 @@ This bootstrap performs no Git operations.
 
 Executable tests cover DLE CLI Standard V1 universal behavior against `runCli`:
 
-- help/version/validate/`--json`
+- help/version/validate/docs/`--json`
 - unknown command/option
 - missing command
 - JSON envelope shape and single-document rule
@@ -302,4 +305,47 @@ Required properties:
 - immutable submitted candidate semantics
 - downstream readiness recomputation
 
-Bootstrap representation: [`../fixtures/synthetic-p001-p002/README.md`](../fixtures/synthetic-p001-p002/README.md) and [`../tests/synthetic-flow.test.ts`](../tests/synthetic-flow.test.ts). Do not populate invented valid/invalid Definition JSON until authoritative DSF schemas exist.
+Bootstrap representation: [`../fixtures/synthetic-p001-p002/README.md`](../fixtures/synthetic-p001-p002/README.md) and [`../tests/synthetic-flow.test.ts`](../tests/synthetic-flow.test.ts). The seven operational synthetic-flow TODOs remain TODOs until an authoritative CLI-state/engine contract exists.
+
+## 17. `docs` command
+
+`docs` is read-only, cwd-independent, and has no network or Git side effects. Help explains invocation; docs explains the Delivery mental model.
+
+### Parsing
+
+```text
+docs [<topic>] [--index|-i] [--all|-a] [--json] [--help|-h]
+```
+
+- `docs` and `docs --index` / `-i` are root index mode.
+- `docs <topic>` is exact topic mode.
+- `docs <topic> --index` / `-i` is scoped index mode.
+- `docs <topic> --all` / `-a` is scoped all mode.
+- `docs --all` / `-a` is root all mode.
+- `--index` and `--all` together → `INVALID_INVOCATION`.
+- Extra positional after `<topic>` → `INVALID_INVOCATION`.
+- `-idx` is an unknown option.
+- There is no `--recursive` flag.
+- Malformed topic ids (grammar violation) → `INVALID_INVOCATION`. They are not normalized.
+- Topic grammar: `^[a-z0-9][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)*$`
+- Lookup is exact. Unknown well-formed ids → `DOCS_TOPIC_NOT_FOUND`. No fuzzy selection.
+- `--help` on `docs` is command help, not the semantic corpus.
+- Unknown options are still diagnosed before help.
+
+**Delegated:** internal parsed type. Observable behavior is not.
+
+### Catalog
+
+Stable ids, titles, optional one-line summaries, Markdown file names, and explicit order live in [`topics/topics.json`](./topics/topics.json). Runtime must not derive ids from headings or filenames.
+
+Catalog integrity fails closed on duplicate ids, grammar violations, missing files, multi-line summaries, duplicate `order` values, a child without an addressable parent, and nondeterministic catalog order. Index mode loads catalog metadata only and does not read Markdown bodies.
+
+### JSON
+
+`command` is `"docs"`. Modes: `index` | `topic` | `all`. Root `scope` is JSON `null`. Topic mode includes immediate `children` only. `--all` uses the same topic order as the matching index scope. Optional `error.details.suggestions` never change the selected result.
+
+Contract examples: [`../contract/examples/docs-index-success.json`](../contract/examples/docs-index-success.json), [`../contract/examples/docs-topic-success.json`](../contract/examples/docs-topic-success.json), [`../contract/examples/docs-all-success.json`](../contract/examples/docs-all-success.json), [`../contract/examples/docs-topic-not-found.json`](../contract/examples/docs-topic-not-found.json).
+
+### Authority
+
+Topic bodies are derived from published DSF/CLI contracts. They must not invent Delivery operational engine semantics. Unimplemented domain commands may be named only to say they are not executable.

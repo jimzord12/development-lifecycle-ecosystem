@@ -13,13 +13,15 @@ This package lives at `packages/dsf/cli/` because the CLI is owned by DSF. It is
 Consumers may rely on:
 
 - the `delivery` binary published via package `bin`
-- [DLE CLI Standard V1](../../../docs/standards/dle-cli-standard-v1.md) universal surface: `--help` / `-h`, `--version`, `validate`, `--json`
+- [DLE CLI Standard V1](../../../docs/standards/dle-cli-standard-v1.md) universal surface: `--help` / `-h`, `--version`, `validate`, `docs`, `--json`
 - the JSON envelope and error codes in [`contract/`](./contract/)
 - independent CLI SemVer in `package.json` (currently `0.1.0`)
 
 `--version --json` reports CLI identity, owning DSF component id/version, and `dleCliStandard: 1`.
 
 `validate` is read-only. It discovers `<cwd>/delivery/` and validates Delivery Definition schema v2 plus DSF graph/invariant rules. It does not repair files, create `.cli` state, or answer operational eligibility questions.
+
+`docs` is read-only documentation retrieval. `delivery docs` is the compact root index. Topic lookup is exact. The corpus ships inside the packaged CLI and does not use the network. Help explains invocation; docs explains the Delivery mental model.
 
 Everything else in `src/` is internal.
 
@@ -29,6 +31,8 @@ Everything else in `src/` is internal.
 delivery --help
 delivery --version --json
 delivery validate --json
+delivery docs
+delivery docs validation --all --json
 ```
 
 The CLI is non-interactive by default. It does not prompt, guess missing inputs, or read stdin unless a later documented option explicitly says so.

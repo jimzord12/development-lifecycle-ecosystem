@@ -1,0 +1,72 @@
+{
+  "catalogVersion": 1,
+  "topics": [
+    {
+      "id": "overview",
+      "title": "Delivery CLI overview",
+      "file": "overview.md",
+      "order": 10
+    },
+    {
+      "id": "definition",
+      "title": "Delivery Definition",
+      "file": "definition.md",
+      "order": 20
+    },
+    {
+      "id": "definition.roadmap",
+      "title": "Roadmap",
+      "file": "definition.roadmap.md",
+      "order": 21
+    },
+    {
+      "id": "definition.milestone",
+      "title": "Milestone",
+      "file": "definition.milestone.md",
+      "order": 22
+    },
+    {
+      "id": "definition.phase",
+      "title": "Phase",
+      "file": "definition.phase.md",
+      "order": 23
+    },
+    {
+      "id": "definition.design-gap",
+      "title": "Design Gap",
+      "file": "definition.design-gap.md",
+      "order": 24
+    },
+    {
+      "id": "validation",
+      "title": "Validation",
+      "file": "validation.md",
+      "order": 30
+    },
+    {
+      "id": "validation.schema",
+      "title": "Schema validation",
+      "file": "validation.schema.md",
+      "order": 31
+    },
+    {
+      "id": "validation.graph",
+      "title": "Graph validation",
+      "file": "validation.graph.md",
+      "order": 32
+    },
+    {
+      "id": "compatibility",
+      "title": "Compatibility",
+      "summary": "Understand the independent DSF, Definition schema, CLI, and CLI-state version axes.",
+      "file": "compatibility.md",
+      "order": 40
+    },
+    {
+      "id": "authority",
+      "title": "Authority and sources of truth",
+      "file": "authority.md",
+      "order": 50
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "ok": false,
+  "command": "docs",
+  "error": {
+    "code": "DOCS_TOPIC_NOT_FOUND",
+    "message": "Documentation topic not found: does.not.exist",
+    "details": {
+      "topic": "does.not.exist"
+    }
+  },
+  "warnings": []
+}

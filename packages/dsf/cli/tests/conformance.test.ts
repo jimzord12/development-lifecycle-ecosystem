@@ -19,6 +19,7 @@ describe('DLE CLI Standard V1 conformance', () => {
     expect(result.stdout).toContain('EXAMPLES');
     expect(result.stdout).toContain('--json');
     expect(result.stdout).toContain('validate');
+    expect(result.stdout).toContain('docs');
     expect(result.stdout).toContain('SIDE EFFECTS');
   });
 

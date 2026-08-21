@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "command": "docs",
+  "result": {
+    "mode": "all",
+    "scope": "validation",
+    "topics": [
+      {
+        "id": "validation",
+        "title": "Validation",
+        "content": "# Validation\n\n`delivery validate` is read-only. It discovers `<cwd>/delivery/`, validates Delivery Definition schema v2, then checks DSF graph invariants. It does not repair files, create `.cli` state, or mutate Git.\n\nCanonical structural validation is distinct from operational eligibility: validate does not mean ready to start. Later `status` / phase-start preconditions, if implemented, are a different question.\n\nUnsupported `schemaVersion` values fail closed with `COMPATIBILITY_UNSUPPORTED` before graph checking. Schema and graph findings are reported together under `VALIDATION_FAILED` without changing files.\n\nSee `validation.schema` and `validation.graph`.\n"
+      },
+      {
+        "id": "validation.schema",
+        "title": "Schema validation",
+        "content": "# Schema validation\n\nSchema validation is structural JSON Schema Draft 2020-12 checking of Roadmap, Milestone, Phase, and Design-Gap artifacts against the published DSF 1.1.1 v2 schemas.\n\nThe CLI compiles those schemas with Ajv 8.17.1. Packaged installs use bundled copies under `dist/schemas/v2`; they do not require the development monorepo `packages/dsf/contract` tree.\n\nStructural failure produces `VALIDATION_FAILED` findings with `kind` `schema`. This step does not answer operational eligibility and does not repair documents.\n"
+      },
+      {
+        "id": "validation.graph",
+        "title": "Graph validation",
+        "content": "# Graph validation\n\nAfter schema validation, the CLI checks DSF graph invariants: reference existence, identifier uniqueness, and dependency cycles.\n\nCurrent checks include:\n\n- duplicate Milestone, Phase, and Design-Gap ids\n- file basename identity (`M-001.json` must declare `id` `M-001`)\n- Roadmap `milestoneOrder` and Phase `milestoneId` / `repositories` references\n- Milestone and Phase `dependsOn` acyclic graphs\n- Foundation Phases establishing architectural subsystems before they are consumed\n- verification `covers` pointing at acceptance-criteria keys\n- Design-Gap `phaseId` references\n\nGraph findings use `kind` `graph` and codes such as `REFERENCE_NOT_FOUND`, `DUPLICATE_ID`, `FILE_IDENTITY_MISMATCH`, and `DEPENDENCY_CYCLE`. They are reported without repair.\n"
+      }
+    ]
+  },
+  "warnings": []
+}
