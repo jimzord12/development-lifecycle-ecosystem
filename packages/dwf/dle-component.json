@@ -1,0 +1,7 @@
+{
+  "manifestVersion": 1,
+  "id": "dwf",
+  "name": "Design Workspace Framework",
+  "version": "0.1.0-local.32",
+  "kind": "framework"
+}

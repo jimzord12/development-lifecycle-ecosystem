@@ -13,8 +13,9 @@ This repository currently provides:
 - the DSF first-class component (1.2.0) with Delivery Definition schema v2 and public consumer contract 3
 - a DSF-owned Delivery CLI with read-only `delivery validate` and `delivery docs`
 - the IRS first-class component (1.3.0) as an Agent Skill plus Progress Tracker state version 3
+- the DWF first-class component (0.1.0-local.32) with Workspace Protocol 031
 
-DWF (Design Workspace Framework) remains part of the ecosystem model and is added when its public contract is hosted. Do not treat co-location in this monorepo as a runtime coupling.
+Do not treat co-location in this monorepo as a runtime coupling.
 
 ## Principles
 
@@ -39,6 +40,7 @@ Currently materialized:
 
 - [`packages/dsf`](./packages/dsf/) — Delivery System Framework. Owns the optional [Delivery CLI](./packages/dsf/cli/) under `packages/dsf/cli/`.
 - [`packages/implementation-record-system`](./packages/implementation-record-system/) — Implementation Record System.
+- [`packages/dwf`](./packages/dwf/) — Design Workspace Framework.
 
 Delivery CLI is not a peer component. Do not add `packages/delivery-cli/`.
 
