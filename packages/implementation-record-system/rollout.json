@@ -1,0 +1,11 @@
+{
+  "kind": "irs-rollout",
+  "rolloutSchemaVersion": 1,
+  "componentManifest": "dle-component.json",
+  "routerPath": ".",
+  "stateVersion": 3,
+  "supportedSourceStateVersions": [2, 3],
+  "migrationPaths": {
+    "2->3": "migrations/state-2-to-3.md"
+  }
+}
