@@ -24,7 +24,7 @@ and wait for me to choose NORMAL or FAST before the first design question.
 
 Decide how a **project that already uses DLE** should host design, Delivery, and related artifacts when those artifacts live **next to the implementation repositories**, so a co-worker can continue work without generating a Portable Implementation Package (PIP).
 
-This is DLE consumption-model design. It may change DWF, DSF, IRS, or all three. It is not ICS product design, not Delivery CLI domain commands, and not Host CLI.
+This is DLE consumption-model design. It may change DWF, DSF, IRS, or all three. It is not originating-product domain design, not Delivery CLI domain commands, and not Host CLI.
 
 ## What just happened (do not redo)
 
