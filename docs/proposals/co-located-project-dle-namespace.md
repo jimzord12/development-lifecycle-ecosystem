@@ -1,6 +1,6 @@
-# Co-located project DLE namespace
+# Co-located project DLE instance
 
-**Status:** discussion draft. Next-session handoff. Not an accepted contract.
+**Status:** discussion draft. Working model from the 2026-08-21 design session. Not an accepted contract.
 
 Do not implement from this file. Do not treat it as overriding DLE Component Standard V1, DLE CLI Standard V1, DSF 1.2.0, IRS 1.3.0, or DWF Protocol 031.
 
@@ -11,24 +11,29 @@ Do not implement from this file. Do not treat it as overriding DLE Component Sta
 ```text
 Continue DLE from docs/proposals/co-located-project-dle-namespace.md.
 
-This is a design session, not implementation. Do not run Phase 7. Do not
-implement from this proposal. Do not read workspace-migration/sessions/.
+The working same-team consumption model is drafted there. This is still
+discussion only. Do not implement from this proposal. Do not run Phase 7.
+Do not read workspace-migration/sessions/.
 
-Load AGENTS.md and the Public Contracts named in that handoff. Then orient
-and wait for me to choose NORMAL or FAST before the first design question.
+Load AGENTS.md and the Public Contracts named in that draft. Then orient
+and wait for NORMAL or FAST unless already specified.
 ```
 
 ---
 
-## What this session is
+## What this draft is
 
-Decide how a **project that already uses DLE** should host design, Delivery, and related artifacts when those artifacts live **next to the implementation repositories**, so a co-worker can continue work without generating a Portable Implementation Package (PIP).
+A same-team consumption model: a project that already uses DLE hosts design, Delivery, Topics, and IRS **next to the implementation repositories**. A co-worker continues without generating a Portable Implementation Package (PIP).
 
-This is DLE consumption-model design. It may change DWF, DSF, IRS, or all three. It is not originating-product domain design, not Delivery CLI domain commands, and not Host CLI.
+This is DLE consumption-model design. It may later change DWF, DSF, IRS, or add CLI/skill surface. It is not originating-product domain design and not Delivery CLI domain commands.
 
-## What just happened (do not redo)
+Keep it **framework-generic**. Do not copy private repository identities, product domain truth, or delivery JSON into this public repo.
 
-This public repository already hosts:
+---
+
+## Published contracts that still win
+
+Until this substance is promoted into a standard, schema, fixture, test, or decision record, the published contracts still apply:
 
 | Component              | Version                                         | Path                                          |
 | ---------------------- | ----------------------------------------------- | --------------------------------------------- |
@@ -39,96 +44,137 @@ This public repository already hosts:
 | IRS                    | 1.3.0, tracker state 3                          | `packages/implementation-record-system/`      |
 | DWF                    | 0.1.0-local.32, Protocol 031                    | `packages/dwf/`                               |
 
-That was the extraction program (P-001–P-006). `workspace-migration/` is gitignored local empirical material. Do not commit it. Do not read `workspace-migration/sessions/`. Sessions are historical discussion, not specs. Planned and parked sessions are not valid.
+Authoritative current PIP meaning:
 
-**Phase 7 is not this session.** Phase 7 would pin today's published DLE releases into the originating Design Workspace so that workspace becomes a DLE _consumer_ under the **current** PIP / `.framework/` model. That pin is the wrong next step if this session changes how a project hosts DLE artifacts. Leave Phase 7 parked until this design is accepted or explicitly deferred.
+- DWF Protocol 031: ordinary implementation handoff is a PIP. DWF is installed under `design/.framework/`, DSF under `delivery/.framework/`. The PIP exports a bounded `design/` projection, not a recoverable Design Workspace. Historical Design Sessions stay out of the PIP.
+- DSF `packages/dsf/contract/docs/package-updates.md`: PIP is a self-contained handoff. Project-owned packaged truth changes only after explicit human resolution of a Design Gap. Each material mutation appends immutable `AM-*`. `.framework/**` and existing `AM-*` records are immutable.
+- IRS 1.3.0: PIP is implementation authority; IRS is mutable run state. Expected shape today is PIP, `implementation-record/`, and implementation repos as siblings.
 
-## The user's question
+`workspace-migration/` is gitignored local empirical material. Do not commit it. Do not read `workspace-migration/sessions/`.
 
-A co-worker should be able to continue an in-flight multi-repo product using DLE.
+**Phase 7 remains parked.** Pinning today's published DLE releases into the originating Design Workspace under the current PIP / `.framework/` model is the wrong next step while this consumption profile is the intended direction.
 
-Today the originating instance works like this:
+---
 
-1. long-running design lives in a Design Workspace (ZIP / extracted tree);
-2. implementation is handed off by **generating a PIP**;
-3. IRS records the run beside that PIP and the implementation repositories;
-4. Design Gaps that change packaged truth use **Package Amendments**, because the PIP is a separate mutable lineage from the Design Workspace.
+## Working model (this session)
 
-The desired direction:
+Same-team continuation does not generate a PIP and does not copy `.framework/` into the project. The public DLE git clone is the install. The project owns an **instance directory** whose layout is the current PIP **project** tree, minus `.framework/`, plus `topics/` and `implementation-record/`.
 
-- The whole platform is several implementation repositories plus a **DLE namespace** (a directory, sibling tree, or parent/namespace — exact shape is a decision).
-- That namespace already contains design, Delivery, and whatever else implementation needs.
-- A co-worker is given that namespace plus the repositories. They should **not** need a generated PIP, because nothing is being transported across a gap.
-- Amendments may also be unnecessary, because there is no detached package lineage to reconstruct. Project-owned truth would be edited in place, next to the code, under ordinary Git.
+Daily work is a **user-scope router skill**. The CLI is plumbing and queries, not the loop.
 
-PIP and Amendments existed because design and implementation used to be **separated** (workspace ZIP → portable package → repos). If they are **co-located**, that transport/provenance machinery may be the wrong default.
+### Bootstrap
 
-Keep the design **framework-generic**. The originating instance is a three-repository platform with an existing Design Workspace, PIP, and IRS run. Do not copy that product's domain truth, private repository identities, or delivery JSON into this public repo.
-
-## What a co-worker needs today (current contracts)
-
-Until this session accepts a new model, the current public contracts still apply. A co-worker continuing **implementation** needs:
-
-1. the current PIP (or a freshly materialized one from the Design Workspace);
-2. the IRS skill from `packages/implementation-record-system/` and the existing `implementation-record/` if a run already exists;
-3. the implementation repositories named by the Delivery Definition;
-4. the DLE public contracts if they must interpret framework vocabulary (DWF `.framework/README.md`, DSF `.framework/README.md` / `packages/dsf/README.md`).
-
-A co-worker continuing **design** still needs the Design Workspace (complete ZIP or extract), not the PIP. The PIP is not a recoverable Design Workspace.
-
-Do not invent a coworker bootstrap that this session has not accepted.
-
-## Why PIP and Amendments exist today
-
-Authoritative current meaning:
-
-- DWF Protocol 031: PIP is the ordinary implementation handoff. It installs pinned DWF under `design/.framework/` and DSF under `delivery/.framework/`. It exports a bounded `design/` projection, not the whole Design Workspace. Historical sessions and protocol machinery stay out of the PIP.
-- DSF `packages/dsf/contract/docs/package-updates.md`: PIP is a self-contained handoff, not a new design authority. Project-owned packaged truth changes only after explicit human resolution of a Design Gap. Each material mutation appends immutable `AM-*` provenance. `.framework/**` and existing `AM-*` records are immutable. Framework upgrades rematerialize a new lineage.
-- IRS 1.3.0: PIP is implementation authority; IRS is mutable run state. Expected shape is PIP, `implementation-record/`, and implementation repos as siblings. Tracker stores package id/origin/digest/Amendment head.
-
-Amendments are not "Git history." They exist because a **detached package lineage** must prove exactly which predecessor bytes a human-authorized truth change replaced, without mutating pinned frameworks.
-
-If the live project tree **is** the lineage, Git may already provide predecessor bytes. That is a hypothesis, not an accepted replacement for `AM-*`.
-
-## Hypothesized future (not accepted)
+A co-worker uses an independently runnable CLI (working name `dle`; see [Relationship to other drafts](#relationship-to-other-drafts)). They do not have to clone DLE by hand first.
 
 ```text
-<platform-or-namespace>/
-├── <dle-namespace>/          # name/layout undecided
-│   ├── design/               # project design truth (not a generated PIP)
-│   ├── delivery/             # Delivery Definition
-│   └── ?                     # IRS? pinned DLE releases? protocol?
-├── <repo-a>/
-├── <repo-b>/
-└── <repo-c>/
+dle init <instance-path> --dle-home <dle-clone-path>
 ```
 
-Possible consequences, to pressure-test rather than assume:
+When no install is bound:
 
-- materializing a PIP becomes unnecessary for same-team continuation;
-- Design Workspace ZIP may remain for chat/design, or design may move into the namespace;
-- Package Amendments may shrink to Git commits, a smaller provenance record, or stay for Design Gaps;
-- IRS `authoritativePackage` may need a successor identity (tree digest, Git tree, namespace revision);
-- pinned DLE releases still have to live _somewhere_ so the project does not fork DSF/DWF/IRS source;
-- a co-worker recipe becomes: clone namespace + repos, load IRS, continue.
+1. Clone this public DLE repository into `--dle-home` (required; no hidden default; no prompt).
+2. Write a **local bind** that points at that clone (machine path; not committed). Optionally record the clone SHA in the bind.
+3. Scaffold the instance at `<instance-path>`: `design/`, `delivery/`, `topics/`, `implementation-record/`, README.
+4. Install the DLE router skill into **user scope** from the clone when the CLI can detect a harness skill directory.
 
-## Decisions this session must make
+Join is not init: a later co-worker binds their clone into an existing instance rather than re-scaffolding.
 
-Ask the user. Do not fill these from habit.
+The project consumes published DLE component trees from that clone. It does not fork or edit `packages/dsf`, `packages/dwf`, or `packages/implementation-record-system` as product source.
 
-1. **What is the DLE namespace physically?** Sibling directory, parent meta-repo, fourth repository, or a folder inside one of the implementation repos.
-2. **What lives in it?** Design only, design+delivery, also IRS, also pinned `.framework/` releases, also protocol/skills.
-3. **Where is canonical design truth after co-location?** Design Workspace ZIP, the namespace `design/`, or both with an explicit projection rule.
-4. **Is PIP still a product?** Same-team default off; still required for zero-context external handoff; or retired.
-5. **What replaces Amendments for in-place Design Gaps?** Ordinary Git; a smaller `AM-*`; nothing; or Amendments only when exporting a PIP.
-6. **How does IRS identify authority** without `packageId` / origin / digest / Amendment head.
-7. **How are DLE framework releases pinned** so the namespace consumes `packages/dsf`, `packages/dwf`, and `packages/implementation-record-system` instead of editing them.
-8. **What exact kit is given to a co-worker** on day one of the new model (paths, skills, first command).
-9. **Does this change published SemVer** of DWF, DSF, and/or IRS, or is it an additional consumption profile.
+### Daily use
 
-If a required meaning is missing or only exists in old session prose, stop and ask.
+| Actor path                      | Role                                                                                              |
+| ------------------------------- | ------------------------------------------------------------------------------------------------- |
+| User-scope DLE **router skill** | Daily driver. Dispatch like IRS `SKILL.md`. User and agent do not need the CLI for ordinary work. |
+| `dle operate`                   | Tells the agent to load that skill. Does not reimplement it.                                      |
+| `dle topics`                    | Machine query, e.g. list Topics.                                                                  |
+| `dle docs`                      | Packaged retrieval (DLE CLI Standard V1). Useful for agents; not the daily loop.                  |
+| `dle validate`                  | Read-only instance check (bind present, required dirs). Does not repair.                          |
+| `dle init`                      | Clone / bind / scaffold / skill install.                                                          |
 
-## Authority for this session
+Operate loop (in the skill, not the CLI):
+
+1. Check the local bind.
+2. Route to the current Topic or IRS next work.
+3. On finish, update that Topic's distillate and harness metadata.
+
+### Instance layout
+
+Working name: project DLE instance. Path is whatever `init` was given.
+
+```text
+<instance>/
+├── README.md                 # points at the user-scope router skill
+├── design/                   # PIP project projection; no design/.framework/
+├── delivery/                 # Delivery Definition; no delivery/.framework/
+├── topics/                   # DLE Topics (renamed Design Sessions)
+└── implementation-record/    # IRS run; inside the instance, not a sibling of a PIP
+```
+
+Local bind (clone path, optional SHA) lives beside this as machine-specific state, same idea as IRS `environment.local.json`. Do not commit `C:\Users\...`.
+
+Canonical implementation-facing truth in this profile is instance `design/` + `delivery/`, in **PIP projection shape** (for example `design/decisions/product.md`, Agent PRD/SPEC, `delivery/roadmap.json`). Topics are not product truth.
+
+Drop from this profile: `design/.framework/`, `delivery/.framework/`, `package-manifest.json`, `amendments/`. No same-team PIP generation. No `AM-*` for in-place Design Gaps. Git on the instance is the lineage.
+
+### Topics
+
+**DLE Topic** replaces **Design Session** in this profile.
+
+- Entry point for starting or planning later agent sessions.
+- Not a full chat transcript.
+- Distilled body plus harness metadata.
+- One Markdown file per Topic: `topics/NNN-slug.md`.
+- YAML frontmatter at least: `harness`, `sessionId`, `duration`, `totalTokens`, `status`, `nextAction`, `touches`.
+- Body: lossless-enough distillate of decisions and context for a _new_ harness. `sessionId` is only for resuming the original chat.
+
+`touches` lists the `design/` and `delivery/` paths the Topic affects. `totalTokens` is user-owned; do not infer it (same rule as IRS).
+
+### CLI surface
+
+This CLI is a conforming DLE CLI Standard V1 CLI: `--help`, `--version`, `validate`, `docs`, `--json` on every result. Non-interactive by default.
+
+It is **not** Delivery CLI (`delivery`). Help explains invocation. `docs` explains this consumption model.
+
+Minimum `docs` catalog: `init`, `instance`, `topics`, `operate`. Topic `operate` is the same instruction as the instance README: load the router skill. The corpus ships in the CLI (Standard V1, offline).
+
+---
+
+## How the original nine questions landed
+
+1. **Physical namespace** — Directory created by `dle init <instance-path>`. Caller chooses where it sits relative to the implementation repos.
+2. **What lives in it** — `design/`, `delivery/`, `topics/`, `implementation-record/`, README. Framework install is the DLE clone via local bind, not `.framework/`.
+3. **Canonical design truth** — Instance `design/` + `delivery/` (PIP projection shape). Topics do not own product behavior.
+4. **PIP** — Not the same-team default. Not generated for continuation. Outsider/zero-context export not designed in this session.
+5. **Amendments** — None in this profile. In-place edits use ordinary Git.
+6. **IRS identity** — IRS lives in the instance. Successor to `packageId` / origin / digest / Amendment head is **deferred**.
+7. **Pinning** — `--dle-home` clone plus local bind; optional clone SHA. Consume the clone; do not edit component source.
+8. **Co-worker kit** — Independently runnable CLI → `init` → user-scope router skill. Daily: skill. CLI: list Topics, `docs`, `validate`.
+9. **SemVer** — **Deferred.** Hypothesis: additional consumption profile, not a silent replacement of published PIP contracts.
+
+---
+
+## Deferred
+
+- IRS `authoritativePackage` successor (tree digest, Git tree, instance revision, or something else).
+- Whether PIP remains a product for zero-context / external handoff.
+- Published SemVer vs additional consumption profile.
+- Harness-by-harness user-scope skill paths (Codex, Claude Code, OpenCode, Pi, and others).
+- Full DLE router playbook list (it will dispatch; it must not duplicate IRS playbooks).
+- Fate of Design Workspace ZIP / Protocol 031 session files versus Topics.
+- Whether the bootstrap CLI is the Host CLI in [`dle-host-cli.md`](./dle-host-cli.md) or a separate product that happens to use the working name `dle`.
+
+---
+
+## Relationship to other drafts
+
+- [`dle-host-cli.md`](./dle-host-cli.md) — Host CLI as ecosystem composition / pins. This draft's CLI is clone, bind, scaffold, `docs`, `validate`, Topic queries, and `operate` → skill. Those are different jobs. This file does not accept Host CLI composition semantics or Deno/exclusive-distro drafts.
+- [`irs-default-router-invocation.md`](./irs-default-router-invocation.md) — IRS router default when invoked with no operation. The DLE router may dispatch _to_ IRS; it does not replace that draft.
+- Delivery CLI `phase` / `init` / mutable engine remain out of this draft.
+
+---
+
+## Authority for a later session
 
 Read only materialized contracts, in this order:
 
@@ -141,21 +187,16 @@ Read only materialized contracts, in this order:
 7. `packages/implementation-record-system/README.md` and `SKILL.md`
 8. this file
 
-Optional empirical context, local and uncommitted: the gitignored Design Workspace extract. Use it only to remember how PIP/IRS were used. Do not copy product files into this repo. Do not read its `sessions/` directory.
+Optional empirical context: the gitignored Design Workspace extract, only to remember how PIP/IRS were used. Do not copy product files into this repo. Do not read its `sessions/` directory.
 
 `docs/proposals/` remains discussion only, including this file.
 
-## Out of scope
+---
 
-- Implementing a namespace layout in this repo or in the originating product
+## Out of scope until explicitly requested
+
+- Implementing the instance layout, CLI, or router skill
 - Phase 7 workspace cutover
-- Delivery CLI `phase` / `init` / mutable engine
-- Host CLI, exclusive distro, Deno
-- IRS default-router proposal
-- Inventing missing semantic contracts to make co-location convenient
-
-## Suggested first design question
-
-After orientation and Design Pace (`NORMAL` or `FAST`):
-
-> For same-team continuation, is the DLE namespace the canonical implementation-facing design+delivery home, with PIP demoted to an export for outsiders — or is PIP still the implementation authority even when files sit next to the repos?
+- Delivery CLI mutable engine
+- Host CLI composition, exclusive distro, Deno
+- Inventing missing semantic contracts (including an IRS package-identity successor) to make co-location convenient
