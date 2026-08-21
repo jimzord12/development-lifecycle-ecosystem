@@ -114,9 +114,9 @@ Working name: project DLE instance. Path is whatever `init` was given.
 
 Local bind (clone path, optional SHA) lives beside this as machine-specific state, same idea as IRS `environment.local.json`. Do not commit `C:\Users\...`.
 
-Canonical implementation-facing truth in this profile is instance `design/` + `delivery/`, in **PIP projection shape** (for example `design/decisions/product.md`, Agent PRD/SPEC, `delivery/roadmap.json`). Topics are not product truth.
+Canonical implementation-facing truth in this profile is instance `design/` + `delivery/`, in **PIP projection shape** (for example `design/decisions/product.md`, Agent PRD/SPEC, `delivery/roadmap.json`). Live instance also keeps `design/OPEN-QUESTIONS.md` and `design/OPEN-DECISIONS.md`. Topics are not product truth.
 
-Drop from this profile: `design/.framework/`, `delivery/.framework/`, `package-manifest.json`, `amendments/`. No same-team PIP generation. No `AM-*` for in-place Design Gaps. Git on the instance is the lineage.
+Drop from this profile: `design/.framework/`, `delivery/.framework/`, `package-manifest.json`, `amendments/`. No same-team PIP generation. No `AM-*` for in-place Design Gaps. Persist = write the instance files. Git is optional rollback, not the loop.
 
 ### Topics
 
@@ -127,6 +127,7 @@ Drop from this profile: `design/.framework/`, `delivery/.framework/`, `package-m
 - Distilled body plus harness metadata.
 - One Markdown file per Topic: `topics/NNN-slug.md`.
 - YAML frontmatter at least: `harness`, `sessionId`, `duration`, `totalTokens`, `status`, `nextAction`, `touches`.
+- `status` uses Protocol 031 durable values: `PLANNED` | `CHECKPOINTED` | `PARKED` | `COMPLETE`.
 - Body: lossless-enough distillate of decisions and context for a _new_ harness. `sessionId` is only for resuming the original chat.
 
 `touches` lists the `design/` and `delivery/` paths the Topic affects. `totalTokens` is user-owned; do not infer it (same rule as IRS).
@@ -183,6 +184,50 @@ Router dispatch (thin; does not reimplement component playbooks):
 - **Product project** — Topics in the project instance. Router → `dwf` for discuss/finalize into instance `design/` / `delivery/`.
 - **DLE itself** — `docs/proposals/` in this repo. Proposal lifecycle (template, open/completed) is a **separate later proposal**, not Topics.
 
+### DWF-on-instance loop
+
+Router loads `dwf`. DWF still owns how design is done. Daily ZIP commands (`Unzip`, `Snapshot`, “return the ZIP”) are **not** this profile’s loop. There is no second Design Workspace tree to sync.
+
+| Playbook            | Does                                                                                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Orient              | Read instance `design/` + `topics/`. Rank Topics. Do not auto-select.                                                                                    |
+| Initialize / Resume | Select Topic, Design Pace (`NORMAL`/`FAST`), start from distillate + canonical `design/`. `ACTIVE` and Pace stay chat-local.                             |
+| Checkpoint          | User-asked only. Promote settled `D-*`/`TD-*` into ledgers. Refresh Topic distillate + `CHECKPOINTED`. Do not regenerate PRD/SPEC or complete the Topic. |
+| Park                | Same persist as Checkpoint, status `PARKED`.                                                                                                             |
+| Finalize            | Settled conclusions only. Ledgers + Agent then Human PRD/SPEC per DWF order. Topic `COMPLETE`.                                                           |
+
+Checkpoint, Park, and Finalize **write the real files**. That is persistence. A later agent reads those files. Git is optional rollback / collaboration, not a DLE command and not a gate.
+
+Two resumes: harness `sessionId` if that chat still exists; otherwise distillate + `design/`. No integer workspace version.
+
+Deferred inside DWF: 9-file Design Package, MiniCourse, Audit/Maintain-on-instance.
+
+### IRS without a PIP
+
+IRS remains the **run recorder**. It does not become the design tree. Authority is the instance’s current `design/` + `delivery/`, reread at the start of each IRS playbook.
+
+Dropping PIP removes the events published IRS 1.3.0 keys off: `authoritativePackage` (id / origin / digest / Amendment head), rematerialized package folders, and `AM-*`. Do **not** invent a digest successor in this draft. `authoritativePackage` is unused in this profile. PASSED/CLOSED results are not auto-staled when a Topic is later Checkpointed; a human says when work must be revalidated.
+
+This profile’s IRS playbooks:
+
+| Playbook             | Keep?  | Change                                                                              |
+| -------------------- | ------ | ----------------------------------------------------------------------------------- |
+| `initialize`         | Yes    | From a valid instance (`design/`, `delivery/`), not from a PIP.                     |
+| `implement-phase`    | Yes    | Load instance Delivery/design, not PIP identity.                                    |
+| `review-milestone`   | Yes    | Unchanged method.                                                                   |
+| `repair-milestone`   | Yes    | Unchanged method.                                                                   |
+| `resolve-design-gap` | Yes    | After the human decides, DWF persist writes instance files. No `amend_package.py`.  |
+| `finish-session`     | Yes    | Handoff test is instance + tracker, not PIP + tracker.                              |
+| `adopt-run`          | Yes    | Rebind `environment.local.json` (instance root + repos). No PIP digest check.       |
+| `reconcile-package`  | **No** | No package lineage to adopt.                                                        |
+| `migrate-run`        | **No** | That playbook swaps PIP, archives `DLE Legacy Files/`, and hunts skills. Dead here. |
+
+Upgrading DLE/IRS **code** is: update the clone + `dle skills` (agent recopies). Not an IRS run playbook.
+
+Do not keep a tracker-schema migrator in this profile until a published state bump actually exists. A future IRS v4 that drops `authoritativePackage` is promotion work, not this draft.
+
+`environment.local.json` binds instance root + repo paths. `RUN.md` points at the IRS skill and the instance.
+
 ---
 
 ## How the original nine questions landed
@@ -191,8 +236,8 @@ Router dispatch (thin; does not reimplement component playbooks):
 2. **What lives in it** — `design/`, `delivery/`, `topics/`, `implementation-record/`, README. Framework install is the DLE clone via local bind, not `.framework/`.
 3. **Canonical design truth** — Instance `design/` + `delivery/` (PIP projection shape). Topics do not own product behavior.
 4. **PIP** — Not the same-team default. Not generated for continuation. Outsider/zero-context export not designed in this session.
-5. **Amendments** — None in this profile. In-place edits use ordinary Git.
-6. **IRS identity** — IRS lives in the instance. Successor to `packageId` / origin / digest / Amendment head is **deferred**.
+5. **Amendments** — None in this profile. In-place persist writes instance files. Git is optional, not the Amendment substitute.
+6. **IRS identity** — No package-id successor in this draft. Unused `authoritativePackage`. IRS lives in the instance and rereads `design/` + `delivery/`.
 7. **Pinning** — `--dle-home` clone plus local bind; optional clone SHA. Consume the clone; do not edit component source.
 8. **Co-worker kit** — Independently runnable CLI → `init` → `dle skills` advice → agent copies `.agents/skills` into harness user-scope. Daily: router skill. CLI: list Topics, `docs`, `validate`, `skills`.
 9. **SemVer** — **Deferred.** Hypothesis: additional consumption profile, not a silent replacement of published PIP contracts.
@@ -201,13 +246,13 @@ Router dispatch (thin; does not reimplement component playbooks):
 
 ## Deferred
 
-- IRS `authoritativePackage` successor (tree digest, Git tree, instance revision, or something else).
 - Whether PIP remains a product for zero-context / external handoff.
 - Published SemVer vs additional consumption profile.
-- DWF-on-instance loop details (Checkpoint vs Topic distillate; Protocol 031 commands vs Git).
 - DLE `docs/proposals/` lifecycle (template, statuses). Separate proposal.
 - Whether the bootstrap CLI is the Host CLI in [`dle-host-cli.md`](./dle-host-cli.md) or a separate product that happens to use the working name `dle`.
 - Exact filesystem identity of `.agents/skills/<id>/` vs `packages/<id>/SKILL.md` (copy, path, or single tree). Implementation, as long as agents find skills at `.agents/skills/` and components still own the playbooks.
+- IRS tracker v4 / dropping `authoritativePackage` in a published IRS release. Not this profile’s playbook set.
+- 9-file Design Package, MiniCourse, Audit/Maintain-on-instance.
 
 ---
 
