@@ -1,38 +1,59 @@
 # Proposals
 
-Discussion drafts live here so humans and coding agents can read them from the repository.
+`docs/proposals/` contains public, framework-generic design and implementation proposals for DLE itself.
 
-These files are **not** accepted contracts.
+A proposal is not automatically runtime authority. Published standards, component Public Contracts, schemas, fixtures, tests, and released code remain authoritative until the proposal is implemented and promoted into those surfaces.
 
-## Authority
+## Lifecycle
 
-Treat as discussion material only:
+Every proposal declares exactly one status:
 
-- `docs/proposals/`
+| Status                 | Meaning                                                                                               |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| `exploration`          | Early investigation. Boundaries or major decisions are still unresolved.                              |
+| `design-draft`         | One coherent change is under design. It is reviewable but not yet authorized for implementation.      |
+| `implementation-ready` | The human design authority accepted the proposal. A coding agent may implement it as written.         |
+| `implemented`          | The accepted substance was promoted into authoritative standards, contracts, schemas, tests, or code. |
+| `superseded`           | A newer proposal replaced this one.                                                                   |
+| `rejected`             | The proposal was deliberately declined.                                                               |
 
-Treat as authoritative for the behavior they explicitly define:
+Only the human design authority may promote a proposal to `implementation-ready`, `rejected`, or `superseded`.
 
-- `docs/standards/`
-- checked-in schemas, fixtures, tests, and decision records
+`implementation-ready` authorizes implementation; it does not itself override released behavior. If an implementation-ready proposal conflicts with current authority, the implementer must update the named authority as part of the proposal or stop and report the conflict.
 
-A proposal must not be used to invent missing semantic contracts, implement a product, or override a published standard.
+## Required metadata
 
-Acceptance means the substance is promoted into a standard, schema, fixture, test, or decision record. Leaving a file in this directory does not accept it.
+Each proposal must state near the top:
 
-If a proposal conflicts with a published standard, the standard wins until an explicit standard change is accepted.
+- **Status**
+- **Decision authority**
+- **Last reconciled against**
+- **Depends on**
+- **Supersedes**
+- **Affected contracts/components**
 
-## Adding a proposal
+Use `none` when a field does not apply. Do not omit it.
 
-- Keep the draft framework-generic and public. No private company material.
-- Use a descriptive slug: `docs/proposals/<topic>.md`.
-- State **Status: discussion draft** at the top.
-- Link the published standards that constrain the draft.
-- Do not put proposals under `packages/<component-id>/` unless the draft is only about that component's already-owned public contract.
+## Authoring rules
 
-## Current drafts
+- Keep proposals public and framework-generic. Do not include private company material, credentials, private repository identities, or project-specific implementation truth.
+- Give each file one coherent design or implementation responsibility.
+- Link the published standards and Public Contracts that constrain it.
+- Preserve accepted decisions, but keep unresolved choices explicit.
+- An implementation-ready proposal must include exact target surfaces, normative requirements, non-goals, compatibility/versioning expectations, and verifiable acceptance criteria.
+- Do not copy an existing standard into a proposal. State the intended delta and point to the authority that will own the result.
+- Do not leave two live proposals claiming ownership of the same behavior. Reconcile them, then supersede or remove the obsolete draft; Git history preserves it.
+- Promotion to `implemented` must record where the accepted substance landed.
 
-- [Co-located project DLE namespace](./co-located-project-dle-namespace.md) — same-team instance, Topics, router+component skills at `.agents/skills`, CLI for init/docs/skills advice
-- [IRS default router invocation](./irs-default-router-invocation.md) — read-only orientation and next-safe-action recommendation when IRS is invoked without an operation
-- [DLE Host CLI](./dle-host-cli.md) — optional umbrella operator vs companion CLIs
-- [DLE exclusive distro and composition](./dle-exclusive-distro.md) — curated catalog, pin/install doctrine, OS matrix
-- [Deno as the DLE Host CLI compile target](./dle-host-cli-deno.md) — TypeScript + Deno compile; not Bun; `delivery` stays Node
+Use [`TEMPLATE.md`](./TEMPLATE.md) for new proposals.
+
+## Current proposals
+
+| Proposal                                                                      | Status                 | Scope                                                                                |
+| ----------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------ |
+| [Agent UX and harness agnosticism](./dle-agent-ux-and-harness-agnosticism.md) | `implementation-ready` | Minimal provider/harness cleanup, model profiles, and agent-mediated user experience |
+| [Project instance consumption profile](./dle-project-instance-consumption.md) | `design-draft`         | Same-team project instance, authority layout, skills, and relationship to PIP        |
+| [DWF project-instance mode](./dwf-project-instance-mode.md)                   | `design-draft`         | Topics and direct DWF persistence without Workspace ZIP transport                    |
+| [IRS project-instance mode](./irs-project-instance-mode.md)                   | `design-draft`         | IRS operation against live instance design/Delivery truth rather than a PIP          |
+| [DLE Host and distribution](./dle-host-and-distribution.md)                   | `design-draft`         | Umbrella CLI, curated distribution, composition, bootstrap, and OS support           |
+| [IRS default router invocation](./irs-default-router-invocation.md)           | `design-draft`         | Read-only orientation and next-safe-action recommendation for bare IRS invocation    |
