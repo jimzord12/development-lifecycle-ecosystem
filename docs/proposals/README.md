@@ -31,6 +31,7 @@ If a proposal conflicts with a published standard, the standard wins until an ex
 
 ## Current drafts
 
+- [Co-located project DLE namespace](./co-located-project-dle-namespace.md) — next-session handoff; in-tree design/delivery namespace vs PIP and Amendments
 - [IRS default router invocation](./irs-default-router-invocation.md) — read-only orientation and next-safe-action recommendation when IRS is invoked without an operation
 - [DLE Host CLI](./dle-host-cli.md) — optional umbrella operator vs companion CLIs
 - [DLE exclusive distro and composition](./dle-exclusive-distro.md) — curated catalog, pin/install doctrine, OS matrix
