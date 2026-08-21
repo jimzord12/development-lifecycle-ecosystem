@@ -4,6 +4,7 @@
 **Audience:** design agent + human design authority  
 **Date:** 2026-08-21  
 **Location:** [`docs/proposals/dle-host-cli.md`](./dle-host-cli.md)  
+**Sibling draft:** [`dle-exclusive-distro.md`](./dle-exclusive-distro.md) (curated distro, pins, OS matrix)  
 **Related published authority:**
 
 - [DLE Component Standard V1](../standards/dle-component-standard-v1.md)
