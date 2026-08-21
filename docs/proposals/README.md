@@ -33,3 +33,4 @@ If a proposal conflicts with a published standard, the standard wins until an ex
 
 - [DLE Host CLI](./dle-host-cli.md) — optional umbrella operator vs companion CLIs
 - [DLE exclusive distro and composition](./dle-exclusive-distro.md) — curated catalog, pin/install doctrine, OS matrix
+- [Deno as the DLE Host CLI compile target](./dle-host-cli-deno.md) — TypeScript + Deno compile; not Bun; `delivery` stays Node

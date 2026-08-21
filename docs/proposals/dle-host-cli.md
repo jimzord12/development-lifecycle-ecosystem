@@ -4,8 +4,11 @@
 **Audience:** design agent + human design authority  
 **Date:** 2026-08-21  
 **Location:** [`docs/proposals/dle-host-cli.md`](./dle-host-cli.md)  
-**Sibling draft:** [`dle-exclusive-distro.md`](./dle-exclusive-distro.md) (curated distro, pins, OS matrix)  
-**Related published authority:**
+**Sibling drafts:**
+
+- [`dle-exclusive-distro.md`](./dle-exclusive-distro.md) — curated distro, pins, OS matrix
+- [`dle-host-cli-deno.md`](./dle-host-cli-deno.md) — Deno compile lock for Host, if Host exists  
+  **Related published authority:**
 
 - [DLE Component Standard V1](../standards/dle-component-standard-v1.md)
 - [DLE CLI Standard V1](../standards/dle-cli-standard-v1.md)

@@ -4,8 +4,11 @@
 **Audience:** design agent + human design authority  
 **Date:** 2026-08-21  
 **Location:** [`docs/proposals/dle-exclusive-distro.md`](./dle-exclusive-distro.md)  
-**Sibling draft:** [`dle-host-cli.md`](./dle-host-cli.md) (whether/how a Host CLI exists)  
-**Related published authority:**
+**Sibling drafts:**
+
+- [`dle-host-cli.md`](./dle-host-cli.md) — whether/how a Host CLI exists
+- [`dle-host-cli-deno.md`](./dle-host-cli-deno.md) — Deno compile lock for Host, if Host exists  
+  **Related published authority:**
 
 - [DLE Component Standard V1](../standards/dle-component-standard-v1.md)
 - [DLE CLI Standard V1](../standards/dle-cli-standard-v1.md)
@@ -239,7 +242,7 @@ Boring, OS-complete, read-mostly:
 
 Produce an accepted/rejected design for this doctrine, not code.
 
-- Keep [`dle-host-cli.md`](./dle-host-cli.md) as the CLI-identity sibling. This file owns distro physics and the OS matrix.
+- Keep [`dle-host-cli.md`](./dle-host-cli.md) as the CLI-identity sibling. This file owns distro physics and the OS matrix. Host compile target, if any, is [`dle-host-cli-deno.md`](./dle-host-cli-deno.md).
 - If accepted: specify the composition artifact, admission/compatibility ownership, install/verify rules, and the OS matrix as normative for the container.
 - If the OS matrix is rejected or narrowed, say so explicitly; do not silently become Ubuntu-only.
 - If this conflicts with published V1 text, list the exact amendments. Do not implement around the conflict.
