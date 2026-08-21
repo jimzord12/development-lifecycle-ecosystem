@@ -1,0 +1,41 @@
+{
+  "skill_name": "creating-interactive-technical-courses",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a 90-minute self-guided interactive mini-course from the attached architecture. The time budget is already fixed, but I have not specified audience, outcomes, scope, or persistence.",
+      "expected_output": "The skill enters preparation, does not re-ask the 90-minute budget, asks only the unresolved deterministic preparation dimensions, performs at most five additional ambiguity questions if materially necessary, and eventually returns a ready-to-build source ZIP rather than requiring the agent runtime to npm install/build.",
+      "files": ["evals/files/sample-architecture.md"],
+      "assertions": [
+        "The agent does not ask for the already supplied 90-minute budget again",
+        "Audience/prior knowledge, desired capabilities/depth, scope, and delivery/persistence are resolved before generation",
+        "Any post-preparation ambiguity pass is capped at five targeted questions total",
+        "The final deliverable is a source ZIP with README and package.json build instructions"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Make me a two-hour interactive course from this architecture for experienced developers who already know the domain. Make EVERYTHING interactive and gamified so nobody gets bored: lots of draggable cards, points, badges, animations, and quizzes after every section. Return the normal deliverable only.",
+      "expected_output": "A source ZIP project that respects the two-hour budget and professional audience while refusing decorative interaction/gamification that does not improve the mental model. Meaningful interactions are retained only where they expose causality, state, comparison, or transfer.",
+      "files": ["evals/files/sample-architecture.md"],
+      "assertions": [
+        "The course does not use interaction count, badges, points, or quizzes-after-every-section as default instructional goals",
+        "Interactions included have an identifiable causal/structural purpose",
+        "The course keeps a professional rather than infantilizing tone",
+        "The required-path estimate is no more than 120 minutes",
+        "The source ZIP excludes node_modules and compiled output"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Turn this into a 3-week mini-course for working developers. I want every technical edge case included because completeness matters.",
+      "expected_output": "The skill does not proceed with a required three-week mini-course. It explains the 14-day capability ceiling and proposes narrowing the outcome or splitting the material. It also resists exhaustive edge-case coverage in the main path.",
+      "files": ["evals/files/sample-architecture.md"],
+      "assertions": [
+        "The response does not accept a required three-week mini-course as valid input",
+        "It offers to narrow or split the course into one or more <=14-day mini-courses",
+        "It does not promise exhaustive edge-case coverage in the required learning path"
+      ]
+    }
+  ]
+}

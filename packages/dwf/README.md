@@ -14,6 +14,8 @@ External consumers may rely on:
 - this README, including this Public Contract
 - [`WORKSPACE-PROTOCOL.md`](WORKSPACE-PROTOCOL.md) Protocol **031** for commands, operating modes, file ownership, and workspace lifecycle
 - [`skills/frontier-wave-traversal.md`](skills/frontier-wave-traversal.md) for FAST Design Pace
+- [`skills/prepare-implementation-package/SKILL.md`](skills/prepare-implementation-package/SKILL.md) for Portable Implementation Package materialization and Amendments
+- [`skills/creating-interactive-technical-courses/SKILL.md`](skills/creating-interactive-technical-courses/SKILL.md) for the protocol `MiniCourse` command
 - [`templates/starter/`](templates/starter/) as the empty generic Design Workspace starter
 - PIP install paths `design/.framework/` (DWF) and `delivery/.framework/` (DSF) from the protocol and accepted DSF/DWF consumption rules
 - Amendment schema V2 behavior described by the protocol and the prepare-package skill: predecessor bytes and before/after digests, no full after-state copies in new Amendments
@@ -50,5 +52,8 @@ packages/dwf/
 ├── README.md
 ├── WORKSPACE-PROTOCOL.md
 ├── skills/
+│   ├── frontier-wave-traversal.md
+│   ├── prepare-implementation-package/
+│   └── creating-interactive-technical-courses/
 └── templates/starter/
 ```
