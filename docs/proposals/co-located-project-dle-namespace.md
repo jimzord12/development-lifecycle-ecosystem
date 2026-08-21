@@ -60,7 +60,7 @@ Authoritative current PIP meaning:
 
 Same-team continuation does not generate a PIP and does not copy `.framework/` into the project. The public DLE git clone is the install. The project owns an **instance directory** whose layout is the current PIP **project** tree, minus `.framework/`, plus `topics/` and `implementation-record/`.
 
-Daily work is a **user-scope router skill**. The CLI is plumbing and queries, not the loop.
+Daily work is a **router skill** after the agent copies clone skills into the harness user-scope directory. The CLI is plumbing and queries, not the loop. DLE does not write harness paths.
 
 ### Bootstrap
 
@@ -75,7 +75,7 @@ When no install is bound:
 1. Clone this public DLE repository into `--dle-home` (required; no hidden default; no prompt).
 2. Write a **local bind** that points at that clone (machine path; not committed). Optionally record the clone SHA in the bind.
 3. Scaffold the instance at `<instance-path>`: `design/`, `delivery/`, `topics/`, `implementation-record/`, README.
-4. Install the DLE router skill into **user scope** from the clone when the CLI can detect a harness skill directory.
+4. Print the same read-only skills advice as `dle skills` (clone path; tell the agent to copy into user-scope). Do **not** write into any harness directory.
 
 Join is not init: a later co-worker binds their clone into an existing instance rather than re-scaffolding.
 
@@ -83,20 +83,21 @@ The project consumes published DLE component trees from that clone. It does not 
 
 ### Daily use
 
-| Actor path                      | Role                                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------------------- |
-| User-scope DLE **router skill** | Daily driver. Dispatch like IRS `SKILL.md`. User and agent do not need the CLI for ordinary work. |
-| `dle operate`                   | Tells the agent to load that skill. Does not reimplement it.                                      |
-| `dle topics`                    | Machine query, e.g. list Topics.                                                                  |
-| `dle docs`                      | Packaged retrieval (DLE CLI Standard V1). Useful for agents; not the daily loop.                  |
-| `dle validate`                  | Read-only instance check (bind present, required dirs). Does not repair.                          |
-| `dle init`                      | Clone / bind / scaffold / skill install.                                                          |
+| Actor path                      | Role                                                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| User-scope DLE **router skill** | Daily driver, after the agent copies clone skills. Dispatch only. User and agent do not need the CLI for ordinary work. |
+| `dle operate`                   | Tells the agent to load the router skill. Does not reimplement it.                                                      |
+| `dle skills`                    | Read-only: clone skills path + “copy into this harness’s user-scope directory.” No user-scope writes.                   |
+| `dle topics`                    | Machine query, e.g. list Topics.                                                                                        |
+| `dle docs`                      | Packaged retrieval (DLE CLI Standard V1). Useful for agents; not the daily loop.                                        |
+| `dle validate`                  | Read-only instance check (bind present, required dirs). Does not repair.                                                |
+| `dle init`                      | Clone / bind / scaffold, and emit the same skills advice as `dle skills`.                                               |
 
-Operate loop (in the skill, not the CLI):
+Operate loop (in the **router skill**, not the CLI):
 
 1. Check the local bind.
-2. Route to the current Topic or IRS next work.
-3. On finish, update that Topic's distillate and harness metadata.
+2. Classify the situation and load **exactly one** component skill (`dwf`, `dsf`, or `irs`).
+3. That component skill routes to a playbook. On finish of a design Topic, update that Topic's distillate and harness metadata.
 
 ### Instance layout
 
@@ -104,7 +105,7 @@ Working name: project DLE instance. Path is whatever `init` was given.
 
 ```text
 <instance>/
-├── README.md                 # points at the user-scope router skill
+├── README.md                 # points at the router skill (copy from clone via `dle skills`)
 ├── design/                   # PIP project projection; no design/.framework/
 ├── delivery/                 # Delivery Definition; no delivery/.framework/
 ├── topics/                   # DLE Topics (renamed Design Sessions)
@@ -136,7 +137,51 @@ This CLI is a conforming DLE CLI Standard V1 CLI: `--help`, `--version`, `valida
 
 It is **not** Delivery CLI (`delivery`). Help explains invocation. `docs` explains this consumption model.
 
-Minimum `docs` catalog: `init`, `instance`, `topics`, `operate`. Topic `operate` is the same instruction as the instance README: load the router skill. The corpus ships in the CLI (Standard V1, offline).
+Minimum `docs` catalog: `init`, `instance`, `topics`, `operate`, `skills`. Topic `operate` is the same instruction as the instance README: load the router skill. The corpus ships in the CLI (Standard V1, offline).
+
+### Agent skills architecture
+
+Superpowers-shaped: a thin **router** for UX, plus **one invocable skill per first-class DLE component**. Direct invoke of a component skill remains legal. The router is the nicer front door.
+
+Invocable surface:
+
+| Skill | Role                                                                                             |
+| ----- | ------------------------------------------------------------------------------------------------ |
+| `dle` | Router only. Classify the job; load one component skill. No playbooks of its own.                |
+| `dwf` | How design works. Protocol 031 method on the instance tree. Playbooks, not nested skills.        |
+| `dsf` | Agent method for Delivery Definition. May run `delivery` as a tool. Playbooks, not a second CLI. |
+| `irs` | Already this shape: `SKILL.md` + `references/` playbooks.                                        |
+
+Each component skill mimics IRS: one `SKILL.md` that routes to **playbooks under `references/`**. No nested invocable `SKILL.md` inside a component. Today's DWF extras (`prepare-implementation-package`, MiniCourse, frontier-wave-traversal) are **playbooks of `dwf`** in this architecture. Promoting that into the DWF Public Contract is later work.
+
+Canonical agent-facing tree is the **DLE clone**:
+
+```text
+<dle-home>/.agents/skills/
+├── dle/     # router
+├── dwf/
+├── dsf/
+└── irs/
+```
+
+Components still own their skill and playbooks. `.agents/skills/<id>/` is how an agent **finds** them in the clone. DSF gets a skill even though it has `delivery`: skill = agent method; CLI = deterministic tool a playbook may invoke.
+
+User-scope is a **copy the agent makes**. `dle skills` is read-only advice: print the clone skills path and tell the agent to copy those directories into **this harness's** user-scope skills directory. The harness knows that destination; DLE does not. Optional later: `dle skills --json` lists skill ids and source paths. Still no user-scope writes.
+
+Router dispatch (thin; does not reimplement component playbooks):
+
+| Situation                           | Load                                  |
+| ----------------------------------- | ------------------------------------- |
+| Bind / join / “where is DLE?”       | CLI `init` / local bind; `dle skills` |
+| Open / continue a **design** Topic  | `dwf`                                 |
+| Implementation Phase / Review / Gap | `irs`                                 |
+| Delivery graph / Definition         | `dsf` (may run `delivery validate`)   |
+| List / query Topics                 | CLI `topics` and/or read `topics/`    |
+
+**Two design surfaces (do not mix):**
+
+- **Product project** — Topics in the project instance. Router → `dwf` for discuss/finalize into instance `design/` / `delivery/`.
+- **DLE itself** — `docs/proposals/` in this repo. Proposal lifecycle (template, open/completed) is a **separate later proposal**, not Topics.
 
 ---
 
@@ -149,7 +194,7 @@ Minimum `docs` catalog: `init`, `instance`, `topics`, `operate`. Topic `operate`
 5. **Amendments** — None in this profile. In-place edits use ordinary Git.
 6. **IRS identity** — IRS lives in the instance. Successor to `packageId` / origin / digest / Amendment head is **deferred**.
 7. **Pinning** — `--dle-home` clone plus local bind; optional clone SHA. Consume the clone; do not edit component source.
-8. **Co-worker kit** — Independently runnable CLI → `init` → user-scope router skill. Daily: skill. CLI: list Topics, `docs`, `validate`.
+8. **Co-worker kit** — Independently runnable CLI → `init` → `dle skills` advice → agent copies `.agents/skills` into harness user-scope. Daily: router skill. CLI: list Topics, `docs`, `validate`, `skills`.
 9. **SemVer** — **Deferred.** Hypothesis: additional consumption profile, not a silent replacement of published PIP contracts.
 
 ---
@@ -159,10 +204,10 @@ Minimum `docs` catalog: `init`, `instance`, `topics`, `operate`. Topic `operate`
 - IRS `authoritativePackage` successor (tree digest, Git tree, instance revision, or something else).
 - Whether PIP remains a product for zero-context / external handoff.
 - Published SemVer vs additional consumption profile.
-- Harness-by-harness user-scope skill paths (Codex, Claude Code, OpenCode, Pi, and others).
-- Full DLE router playbook list (it will dispatch; it must not duplicate IRS playbooks).
-- Fate of Design Workspace ZIP / Protocol 031 session files versus Topics.
+- DWF-on-instance loop details (Checkpoint vs Topic distillate; Protocol 031 commands vs Git).
+- DLE `docs/proposals/` lifecycle (template, statuses). Separate proposal.
 - Whether the bootstrap CLI is the Host CLI in [`dle-host-cli.md`](./dle-host-cli.md) or a separate product that happens to use the working name `dle`.
+- Exact filesystem identity of `.agents/skills/<id>/` vs `packages/<id>/SKILL.md` (copy, path, or single tree). Implementation, as long as agents find skills at `.agents/skills/` and components still own the playbooks.
 
 ---
 
