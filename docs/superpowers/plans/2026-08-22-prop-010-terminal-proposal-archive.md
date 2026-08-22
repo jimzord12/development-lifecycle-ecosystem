@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node.js 24 ESM, `node:fs/promises`, `node:test`, YAML, Prettier, pnpm 11, Git.
 
-**Spec:** `docs/proposals/PROP-010-dle-proposal-active-root-and-terminal-archive.md`
+**Spec:** `docs/proposals/archive/implemented/PROP-010-dle-proposal-active-root-and-terminal-archive.md`
 
 ## Global Constraints
 

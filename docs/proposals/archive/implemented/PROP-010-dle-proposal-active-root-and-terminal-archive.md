@@ -1,7 +1,7 @@
 ---
 id: PROP-010
 title: DLE proposal active-root and terminal archive organization
-status: implementation-ready
+status: implemented
 priority: 1
 summary: >-
   Keep actionable proposals at the root of docs/proposals while moving implemented, superseded, and rejected proposals into status-specific terminal archive directories. Preserve stable proposal IDs, recursive discovery, valid links, deterministic orientation, and Git history through every terminal transition.
@@ -231,4 +231,13 @@ None that block implementation.
 
 ## Promotion Record
 
-Not implemented.
+Implemented by commit `980a3c3550b313d72c06c13f69af495fe936586f` (`feat: materialize terminal proposal archive`).
+
+Authoritative repository surfaces:
+
+- recursive proposal discovery, lifecycle/path validation, proposal-body link validation, next-ID derivation, generated navigation, scheduling, and orientation in `scripts/proposals.mjs`;
+- proposal behavior tests and nested fixtures under `scripts/`;
+- terminal-transition governance in `docs/standards/dle-proposal-workflow-v1.md`;
+- authoring and agent guidance in `docs/proposals/TEMPLATE.md` and root `AGENTS.md`;
+- recursively generated navigation in `docs/proposals/README.md`; and
+- implemented proposal records under `docs/proposals/archive/implemented/`.
