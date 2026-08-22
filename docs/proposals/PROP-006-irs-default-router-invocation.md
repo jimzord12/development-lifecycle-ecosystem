@@ -1,11 +1,23 @@
-# Proposal: IRS default router invocation
+---
+id: PROP-006
+title: IRS default router invocation
+status: design-draft
+workState: PLANNED
+priority: 3
+summary: >-
+  When IRS is invoked without an operation or mutation request, perform bounded read-only orientation and recommend the next safe operation supported by durable run state. Expose ambiguity instead of guessing and perform no mutation.
+dependsOn:
+  - PROP-001
+supersedes:
+  - previous contents of this file
+decisionAuthority: repository owner
+lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9, IRS 1.3.0 / tracker state 3
+affectedComponents:
+  - implementation-record-system
+nextAction: null
+---
 
-**Status:** `design-draft`  
-**Decision authority:** repository owner  
-**Last reconciled against:** `main@1924d05f036dfc26bc1435459208ecaf3c2c714e`, IRS 1.3.0 / tracker state 3  
-**Depends on:** IRS Public Contract and playbooks under `packages/implementation-record-system/`, DSF 1.2.0 Delivery meaning, [Agent UX and harness agnosticism](./dle-agent-ux-and-harness-agnosticism.md)  
-**Supersedes:** the previous contents of this file  
-**Affected contracts/components:** IRS Public Contract, router skill, operation discovery/routing, evaluation fixtures; no tracker schema change
+# Proposal: IRS default router invocation
 
 ## Summary
 
@@ -182,7 +194,7 @@ Every default-orientation case must assert read-only behavior.
 
 This is a backward-compatible public IRS behavior addition and does not require tracker state migration.
 
-If [Agent UX and harness agnosticism](./dle-agent-ux-and-harness-agnosticism.md) is implemented first, this proposal should target IRS `1.3.1` and release as IRS `1.4.0`, retaining tracker state version `3`. If that ordering changes, determine the final version from the actual combined public-contract diff; do not issue two releases that conflict or duplicate the same router edits.
+If [Agent UX and harness agnosticism](./PROP-001-dle-agent-ux-and-harness-agnosticism.md) is implemented first, this proposal should target IRS `1.3.1` and release as IRS `1.4.0`, retaining tracker state version `3`. If that ordering changes, determine the final version from the actual combined public-contract diff; do not issue two releases that conflict or duplicate the same router edits.
 
 Existing explicit operation invocation remains unchanged.
 

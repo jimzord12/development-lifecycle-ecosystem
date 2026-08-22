@@ -1,11 +1,22 @@
-# Proposal: DLE agent UX and harness agnosticism
+---
+id: PROP-001
+title: DLE agent UX and harness agnosticism
+status: implementation-ready
+priority: 3
+summary: >-
+  Make current DLE surfaces provider-, model-, and modern-harness-agnostic with the smallest justified refactor. Define three lightweight model capability profiles, make the coding agent the plain-language translation layer, remove accidental harness coupling, and add a bounded portability check.
+dependsOn: []
+supersedes:
+  - harness/agent-UX portions of the removed co-located-project-dle-namespace.md draft
+decisionAuthority: repository owner; accepted in the 2026-08-21 design discussion
+lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
+affectedComponents:
+  - dle
+  - dwf
+  - implementation-record-system
+---
 
-**Status:** `implementation-ready`  
-**Decision authority:** repository owner; accepted in the 2026-08-21 design discussion  
-**Last reconciled against:** `main@1924d05f036dfc26bc1435459208ecaf3c2c714e`  
-**Depends on:** [`DLE Component Standard V1`](../standards/dle-component-standard-v1.md), [`DLE CLI Standard V1`](../standards/dle-cli-standard-v1.md), current DWF Protocol 031, current IRS 1.3.0  
-**Supersedes:** the harness/agent-UX portions of the removed `co-located-project-dle-namespace.md` draft  
-**Affected contracts/components:** DLE-wide agent conventions, DWF, IRS, repository release/version summaries
+# Proposal: DLE agent UX and harness agnosticism
 
 ## Summary
 

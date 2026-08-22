@@ -1,11 +1,24 @@
-# Proposal: DLE Host and distribution
+---
+id: PROP-005
+title: DLE Host and distribution
+status: design-draft
+workState: PLANNED
+priority: 3
+summary: >-
+  Define an optional umbrella-owned DLE Host CLI and curated distribution contract for exact component pins, integrity, compatibility, local binding, bootstrap, and skill discovery. The Host remains deterministic plumbing and never performs component-domain work.
+dependsOn:
+  - PROP-002
+supersedes:
+  - removed dle-host-cli.md, dle-exclusive-distro.md, and dle-host-cli-deno.md drafts
+  - bootstrap/CLI portions of the removed co-located-project-dle-namespace.md draft
+decisionAuthority: repository owner
+lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
+affectedComponents:
+  - dle
+nextAction: null
+---
 
-**Status:** `design-draft`  
-**Decision authority:** repository owner  
-**Last reconciled against:** `main@1924d05f036dfc26bc1435459208ecaf3c2c714e`  
-**Depends on:** [`DLE Component Standard V1`](../standards/dle-component-standard-v1.md), [`DLE CLI Standard V1`](../standards/dle-cli-standard-v1.md), [Project instance consumption profile](./dle-project-instance-consumption.md)  
-**Supersedes:** removed drafts `dle-host-cli.md`, `dle-exclusive-distro.md`, `dle-host-cli-deno.md`, plus the bootstrap/CLI portions of removed `co-located-project-dle-namespace.md`  
-**Affected contracts/components:** DLE umbrella architecture, future Host CLI, distribution/catalog/composition contracts, project bootstrap, skill discovery, release CI
+# Proposal: DLE Host and distribution
 
 ## Summary
 

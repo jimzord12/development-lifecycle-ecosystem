@@ -1,11 +1,24 @@
-# Proposal: IRS project-instance mode
+---
+id: PROP-004
+title: IRS project-instance mode
+status: design-draft
+workState: PLANNED
+priority: 3
+summary: >-
+  Add an IRS consumption mode that records implementation progress and evidence against current project-instance design and Delivery authority. The mode requires explicit identity, tracker, migration, and compatibility contracts rather than silently omitting PIP identity and Amendment semantics.
+dependsOn:
+  - PROP-002
+  - PROP-003
+supersedes:
+  - IRS-without-PIP portions of the removed co-located-project-dle-namespace.md draft
+decisionAuthority: repository owner
+lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
+affectedComponents:
+  - implementation-record-system
+nextAction: null
+---
 
-**Status:** `design-draft`  
-**Decision authority:** repository owner  
-**Last reconciled against:** `main@1924d05f036dfc26bc1435459208ecaf3c2c714e`  
-**Depends on:** [Project instance consumption profile](./dle-project-instance-consumption.md), [DWF project-instance mode](./dwf-project-instance-mode.md), IRS 1.3.0, DSF 1.2.0  
-**Supersedes:** the IRS-without-PIP portions of the removed `co-located-project-dle-namespace.md` draft  
-**Affected contracts/components:** IRS Public Contract, router, playbooks, tracker state, environment binding, rollout/migration surface
+# Proposal: IRS project-instance mode
 
 ## Summary
 
@@ -127,7 +140,7 @@ Do not implement a schema migration until those semantics are accepted.
 
 ## Relationship to the default-router proposal
 
-[IRS default router invocation](./irs-default-router-invocation.md) currently targets the published PIP-based IRS run shape. If project-instance mode is released, the default router must become profile-aware and apply a separate precedence branch that never expects PIP identity or package reconciliation.
+[IRS default router invocation](./PROP-006-irs-default-router-invocation.md) currently targets the published PIP-based IRS run shape. If project-instance mode is released, the default router must become profile-aware and apply a separate precedence branch that never expects PIP identity or package reconciliation.
 
 The two changes should not be silently merged while either profile contract remains unresolved.
 

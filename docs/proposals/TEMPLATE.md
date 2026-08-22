@@ -1,11 +1,33 @@
+---
+id: PROP-NNN
+title: <title>
+status: design-draft
+workState: PLANNED
+priority: 3
+summary: >-
+  Write a concise one-to-three-sentence summary used for orientation and the derived proposal index.
+dependsOn:
+  - PROP-NNN
+supersedes: []
+decisionAuthority: <human/project authority>
+lastReconciledAgainst: <branch-or-release>@<commit-or-version>
+affectedComponents:
+  - <component-id-or-dle>
+nextAction: null
+---
+
 # Proposal: <title>
 
-**Status:** `exploration`  
-**Decision authority:** <human/project authority>  
-**Last reconciled against:** `<branch-or-release>@<commit-or-version>`  
-**Depends on:** <paths or `none`>  
-**Supersedes:** <paths or `none`>  
-**Affected contracts/components:** <paths/components or `none`>
+## Frontmatter rules
+
+- Replace `PROP-NNN` with the next monotonic proposal ID. IDs are immutable and never reused; filenames use `PROP-NNN-<slug>.md`.
+- `summary` is required and contains one to three sentences.
+- `dependsOn` lists direct proposal IDs only. Use `[]` when there are no proposal dependencies; keep standards, releases, and other non-proposal constraints in the body.
+- `priority` is an integer from `1` (highest) through `5` (lowest).
+- `workState` is required for unfinished `exploration` and `design-draft` proposals and is one of `PLANNED`, `CHECKPOINTED`, or `PARKED`. Never persist `ACTIVE`.
+- `nextAction` must be a non-empty string for `CHECKPOINTED` and `PARKED`; it may be `null` or omitted for `PLANNED`.
+- Omit both `workState` and `nextAction` for `implementation-ready`, `implemented`, `superseded`, and `rejected` proposals.
+- An `implementation-ready` proposal must name exact target surfaces, normative requirements, non-goals, compatibility/versioning expectations, and deterministic acceptance criteria, with no blocking open question.
 
 ## Summary
 

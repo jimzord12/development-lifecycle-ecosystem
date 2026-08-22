@@ -1,11 +1,23 @@
-# Proposal: DWF project-instance mode
+---
+id: PROP-003
+title: DWF project-instance mode
+status: design-draft
+workState: PLANNED
+priority: 3
+summary: >-
+  Add a DWF consumption mode that persists design work directly into project-owned design, delivery, and Topic files. Workspace ZIP transport is not the daily persistence mechanism, while accepted design and Delivery files remain canonical implementation-facing truth.
+dependsOn:
+  - PROP-002
+supersedes:
+  - DWF-on-instance and Topic portions of the removed co-located-project-dle-namespace.md draft
+decisionAuthority: repository owner
+lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
+affectedComponents:
+  - dwf
+nextAction: null
+---
 
-**Status:** `design-draft`  
-**Decision authority:** repository owner  
-**Last reconciled against:** `main@1924d05f036dfc26bc1435459208ecaf3c2c714e`  
-**Depends on:** [Project instance consumption profile](./dle-project-instance-consumption.md), current DWF Protocol 031  
-**Supersedes:** the DWF-on-instance and Topic portions of the removed `co-located-project-dle-namespace.md` draft  
-**Affected contracts/components:** DWF Public Contract, Workspace Protocol, starter/project-instance templates, DWF skill/playbooks
+# Proposal: DWF project-instance mode
 
 ## Summary
 
@@ -179,7 +191,7 @@ Before this proposal becomes `implementation-ready`:
 4. `ACTIVE`, Design Pace, and machine-specific harness/session details do not become canonical product truth.
 5. Current Workspace ZIP mode remains valid and its behavior is unchanged unless an explicitly accepted migration says otherwise.
 6. Deterministic validation detects malformed Topic metadata, missing required project files, and ownership conflicts.
-7. Provider/harness-neutral interaction conforms to [Agent UX and harness agnosticism](./dle-agent-ux-and-harness-agnosticism.md).
+7. Provider/harness-neutral interaction conforms to [Agent UX and harness agnosticism](./PROP-001-dle-agent-ux-and-harness-agnosticism.md).
 
 ## Open questions
 

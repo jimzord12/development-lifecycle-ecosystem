@@ -14,11 +14,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
+    "proposals:index": "node scripts/proposals.mjs --write",
+    "proposals:check": "node scripts/proposals.mjs --check",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "test": "pnpm -r --if-present run test",
-    "test:coverage": "pnpm -r --if-present run test:coverage",
+    "test:proposals": "node --test scripts/proposals.test.mjs",
+    "test": "pnpm test:proposals && pnpm -r --if-present run test",
+    "test:coverage": "pnpm test:proposals && pnpm -r --if-present run test:coverage",
     "build": "pnpm -r --if-present run build",
-    "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build",
+    "validate": "pnpm proposals:check && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build",
     "changeset": "changeset"
   },
   "devDependencies": {
@@ -31,6 +34,7 @@
     "prettier": "3.9.6",
     "typescript": "6.0.3",
     "typescript-eslint": "8.65.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "yaml": "2.9.0"
   }
 }

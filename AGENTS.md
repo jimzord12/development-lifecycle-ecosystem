@@ -12,6 +12,8 @@ Treat checked-in specifications, decision records, schemas, fixtures, and tests 
 
 Drafts under [`docs/proposals/`](./docs/proposals/) are discussion material only. They are not accepted contracts. Do not implement from a proposal, and do not treat a proposal as overriding a published standard. Acceptance means the substance is promoted into a standard, schema, fixture, test, or decision record.
 
+Proposal identity, YAML metadata, dependency, scheduling, and derived-index rules are enforced by `pnpm proposals:check`. Edit proposal frontmatter rather than hand-editing the generated proposal rows in `docs/proposals/README.md`.
+
 ## Architecture
 
 - DLE is an umbrella, not a mandatory shared runtime.

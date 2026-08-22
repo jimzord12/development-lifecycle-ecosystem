@@ -1,17 +1,31 @@
-# Proposal: DLE project instance consumption profile
+---
+id: PROP-002
+title: DLE project instance consumption profile
+status: design-draft
+workState: PLANNED
+priority: 3
+summary: >-
+  Define an additional same-team DLE consumption profile in which a durable project instance owns live design, Delivery, Topics, and implementation records near its implementation repositories. Team members continue from that instance without exchanging a Portable Implementation Package for ordinary same-team work.
+dependsOn: []
+supersedes:
+  - project-layout, authority, bootstrap-boundary, and agent-skills portions of the removed co-located-project-dle-namespace.md draft
+decisionAuthority: repository owner
+lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
+affectedComponents:
+  - dle
+  - dwf
+  - dsf
+  - implementation-record-system
+nextAction: null
+---
 
-**Status:** `design-draft`  
-**Decision authority:** repository owner  
-**Last reconciled against:** `main@1924d05f036dfc26bc1435459208ecaf3c2c714e`  
-**Depends on:** [`DLE Component Standard V1`](../standards/dle-component-standard-v1.md), current DWF Protocol 031, DSF 1.2.0, IRS 1.3.0, [DLE Host and distribution](./dle-host-and-distribution.md)  
-**Supersedes:** the project-layout, authority, bootstrap-boundary, and agent-skills portions of the removed `co-located-project-dle-namespace.md` draft  
-**Affected contracts/components:** DLE consumption model, DWF, DSF, IRS, future DLE Host, packaged agent skills
+# Proposal: DLE project instance consumption profile
 
 ## Summary
 
 Define an additional same-team DLE consumption profile in which a project keeps live design, Delivery, design-work Topics, and implementation records in one durable project instance located near its implementation repositories. Team members continue from that instance instead of exchanging a Portable Implementation Package for ordinary same-team work.
 
-This is not yet an implementation brief. Current published PIP, DWF, DSF, and IRS contracts remain authoritative until this profile is accepted and promoted through the component-specific proposals it depends on.
+This is not yet an implementation brief. Current published PIP, DWF, DSF, and IRS contracts remain authoritative until this profile is accepted and promoted through downstream component-specific proposals that depend on this blueprint.
 
 ## Problem
 
@@ -78,7 +92,7 @@ The project consumes released DLE component material from a locally bound DLE in
 
 Machine-specific install and repository paths belong in local, non-committed binding state. No absolute machine path belongs in portable project truth.
 
-The exact composition artifact, distribution source, and bind format are owned by [DLE Host and distribution](./dle-host-and-distribution.md), not invented here.
+The exact composition artifact, distribution source, and bind format are owned by [DLE Host and distribution](./PROP-005-dle-host-and-distribution.md), not invented here.
 
 ### Agent-first daily use
 
@@ -136,10 +150,10 @@ This profile must preserve the existing DLE architecture:
 
 This proposal owns only the overall consumption shape. It deliberately delegates detailed behavior:
 
-- [DWF project-instance mode](./dwf-project-instance-mode.md) owns Topics, orientation, direct persistence, and design lifecycle.
-- [IRS project-instance mode](./irs-project-instance-mode.md) owns IRS authority, identity, playbook, and tracker consequences when no PIP is present.
-- [DLE Host and distribution](./dle-host-and-distribution.md) owns installation, composition, exact pins, binding, bootstrap commands, and skill discovery.
-- [Agent UX and harness agnosticism](./dle-agent-ux-and-harness-agnosticism.md) owns provider-neutral interaction and model profiles; this draft must conform to it when implemented.
+- [DWF project-instance mode](./PROP-003-dwf-project-instance-mode.md) owns Topics, orientation, direct persistence, and design lifecycle.
+- [IRS project-instance mode](./PROP-004-irs-project-instance-mode.md) owns IRS authority, identity, playbook, and tracker consequences when no PIP is present.
+- [DLE Host and distribution](./PROP-005-dle-host-and-distribution.md) owns installation, composition, exact pins, binding, bootstrap commands, and skill discovery.
+- [Agent UX and harness agnosticism](./PROP-001-dle-agent-ux-and-harness-agnosticism.md) owns provider-neutral interaction and model profiles; this draft must conform to it when implemented.
 
 DSF's Delivery Definition semantics do not change merely because the containing project layout changes.
 
@@ -160,7 +174,7 @@ This draft does not yet specify:
 
 ## Compatibility and versioning
 
-This profile cannot be shipped as an undocumented directory convention. Acceptance requires coordinated, independently versioned public-contract additions in DWF and IRS, plus any Host/skill distribution contract needed for bootstrap.
+This profile cannot be shipped as an undocumented directory convention. Materialization requires independently versioned public-contract additions in DWF and IRS plus downstream distribution/bootstrap contracts, but acceptance of this blueprint requires only clear abstract boundaries that those consumers must satisfy.
 
 The likely compatibility shape is an **additional consumption profile**, not a silent replacement of the published PIP flow. Final SemVer decisions must be made from the actual component diffs after the open questions below are resolved.
 
@@ -169,9 +183,9 @@ The likely compatibility shape is an **additional consumption profile**, not a s
 Before this proposal can become `implementation-ready`:
 
 1. Decide the PIP relationship for external and zero-context handoff.
-2. Accept the DWF and IRS project-instance-mode contracts.
-3. Specify the Host composition/binding artifact needed to locate released components and the project instance.
-4. Define one canonical packaging/discovery path for the router and component skills without provider-specific writes.
+2. Define the abstract DWF and IRS integration requirements that downstream project-instance-mode contracts must satisfy; their detailed contracts remain owned by those proposals.
+3. Define the abstract composition, installation, binding, and bootstrap requirements that downstream distribution work must satisfy; exact artifact paths, schemas, storage, and CLI details remain owned downstream.
+4. Define canonical ownership and provider-neutral discovery requirements for router and component skills; the concrete packaging/distribution path remains owned downstream.
 5. Define migration/cutover behavior for an existing DWF/PIP/IRS project.
 6. Resolve coordinated component versioning and release order.
 
@@ -191,8 +205,8 @@ A future implementation-ready version must prove at least:
 
 1. Does PIP remain the required external/zero-context export, and what exact command/project state produces it from a live instance?
 2. Is the project instance itself Git-tracked as one repository, embedded in another repository, or neutral to repository layout?
-3. What exact local bind and project composition artifacts locate the DLE installation, component versions, instance root, and implementation repositories?
-4. Is `.agents/skills/` the published canonical skill tree, a generated projection, or only a discovery convention?
+3. What minimum information and portability guarantees must downstream local-binding and composition contracts provide to locate the DLE installation, component versions, instance root, and implementation repositories?
+4. What canonical ownership and discovery requirements must packaged skills satisfy while leaving the concrete packaging path to downstream distribution design?
 5. What migration converts an existing Workspace ZIP + PIP + IRS run into this profile without losing authority or evidence?
 6. What coordinated releases introduce the profile without invalidating current PIP consumers?
 
