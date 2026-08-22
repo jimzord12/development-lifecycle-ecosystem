@@ -1,7 +1,7 @@
 ---
 id: PROP-009
 title: DLE Proposal Workflow V1
-status: implementation-ready
+status: implemented
 priority: 1
 summary: >-
   Establish one explicit human-and-agent workflow for orienting, selecting, advancing, checkpointing, parking, promoting, materializing, and closing DLE proposals. Require an actionable continuation for every unfinished proposal and add deterministic read-only orientation in human and JSON forms.
@@ -254,4 +254,16 @@ None that block implementation.
 
 ## Promotion Record
 
-Not implemented.
+Implemented by commit `e218686feb5d54f878dd0c63851183f6b5052ad0` (`feat: materialize proposal workflow v1`).
+
+Authoritative repository surfaces:
+
+- proposal-working operations, orientation behavior, session outcomes, authority gates, and closure rules in `docs/standards/dle-proposal-workflow-v1.md`;
+- continuation authoring rules in `docs/proposals/TEMPLATE.md`;
+- reconciled unfinished-proposal `nextAction` metadata and the generated `docs/proposals/README.md` index;
+- deterministic continuation validation, scheduling, orientation derivation, human/JSON rendering, and CLI dispatch in `scripts/proposals.mjs`;
+- behavior and read-only integration coverage in `scripts/proposals.test.mjs` and proposal fixtures under `scripts/fixtures/proposals/`;
+- the root `proposals:orient` package command; and
+- aligned agent and contributor guidance in `AGENTS.md`, `CONTRIBUTING.md`, `README.md`, and `docs/README.md`.
+
+No first-class component contract or version changed.
