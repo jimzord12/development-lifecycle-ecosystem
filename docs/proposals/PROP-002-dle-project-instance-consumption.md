@@ -2,21 +2,22 @@
 id: PROP-002
 title: DLE project instance consumption profile
 status: design-draft
-workState: PLANNED
+workState: CHECKPOINTED
 priority: 3
 summary: >-
   Define an additional same-team DLE consumption profile in which a durable project instance owns live design, Delivery, Topics, and implementation records near its implementation repositories. Team members continue from that instance without exchanging a Portable Implementation Package for ordinary same-team work.
+  A Portable Implementation Package remains the deterministic export for external or package-based zero-context handoff.
 dependsOn: []
 supersedes:
   - project-layout, authority, bootstrap-boundary, and agent-skills portions of the removed co-located-project-dle-namespace.md draft
 decisionAuthority: repository owner
-lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
+lastReconciledAgainst: main@11f9ec88acd9a0db285a770ae96c3d32a4b8a7cd
 affectedComponents:
   - dle
   - dwf
   - dsf
   - implementation-record-system
-nextAction: Decide the PIP relationship for external and zero-context handoff.
+nextAction: Define the abstract DWF and IRS integration requirements that downstream project-instance-mode contracts must satisfy.
 ---
 
 # Proposal: DLE project instance consumption profile
@@ -78,7 +79,25 @@ package-manifest.json
 amendments/
 ```
 
-This does **not** reject PIP as a product. Whether PIP remains the external/zero-context handoff format is an explicit open decision below.
+This does **not** reject PIP as a product. It preserves PIP as the external export boundary without requiring it for ordinary continuation inside the live instance.
+
+### PIP remains the external and package-based zero-context handoff boundary
+
+A PIP remains required when implementation authority must move to a recipient that cannot rely on durable access to the same live project instance. A fresh agent with access to that instance is not such a handoff: it orients from the instance and does not need a PIP merely because it has no chat history.
+
+The export is a deterministic point-in-time boundary, not a live mirror:
+
+- the human requests the existing DWF-owned operation in ordinary language, such as `prepare the implementation package` or `prepare an external implementation handoff`; the `dle` router initially routes that request to `dwf`;
+- DWF reads one validated, frozen view of canonical `design/` and `delivery/` truth and resolves the exact DWF and DSF releases selected by the project binding;
+- materialization uses a new empty output root and a new independently mutable PIP lineage, then performs the existing mandatory validation and archive construction;
+- the export must identify the exact source state from which it was produced without requiring chat history or a machine-specific absolute path; and
+- `topics/`, local binding state, and `implementation-record/` are not copied into the PIP because they are not package design or Delivery truth.
+
+The PIP becomes design and Delivery authority for the external implementation run at its recorded package identity. Later edits to the live instance do not mutate that package, and Package Amendments in the external lineage do not silently update the instance. Re-export, package replacement, and return to the live profile require explicit reconciliation; conflicts or package-truth changes retain the existing human-resolution gate.
+
+For a new external run, IRS initializes beside the exported PIP. For an existing project-instance run, external handoff additionally requires a truthful IRS checkpoint that names the exported package state, current work, Git continuation facts, evidence, and next safe action. PIP and IRS remain separate authorities: the PIP says what must be delivered, while IRS says what happened and how to continue. The exact repository-neutral source-state identity and project-instance-to-PIP IRS conversion contract remain downstream DWF and IRS design work.
+
+This decision does not require the instance itself to be a Git repository. The repository owner must still decide the repository-topology question below; until then, downstream export design must not assume that one project-instance commit can identify the complete source state.
 
 ### Topics are not canonical design truth
 
@@ -166,7 +185,7 @@ This draft does not yet specify:
 - DWF Topic schema and migration;
 - IRS tracker state v4;
 - a replacement for PIP identity inside IRS;
-- external/zero-context handoff behavior;
+- an export-receipt schema, source-state identity format, or IRS conversion shape;
 - automatic synchronization between a PIP and a live instance;
 - a public registry, plugin marketplace, or shared DLE runtime;
 - provider-specific skill installation paths; or
@@ -182,12 +201,11 @@ The likely compatibility shape is an **additional consumption profile**, not a s
 
 Before this proposal can become `implementation-ready`:
 
-1. Decide the PIP relationship for external and zero-context handoff.
-2. Define the abstract DWF and IRS integration requirements that downstream project-instance-mode contracts must satisfy; their detailed contracts remain owned by those proposals.
-3. Define the abstract composition, installation, binding, and bootstrap requirements that downstream distribution work must satisfy; exact artifact paths, schemas, storage, and CLI details remain owned downstream.
-4. Define canonical ownership and provider-neutral discovery requirements for router and component skills; the concrete packaging/distribution path remains owned downstream.
-5. Define migration/cutover behavior for an existing DWF/PIP/IRS project.
-6. Resolve coordinated component versioning and release order.
+1. Define the abstract DWF and IRS integration requirements that downstream project-instance-mode contracts must satisfy; their detailed contracts remain owned by those proposals.
+2. Define the abstract composition, installation, binding, and bootstrap requirements that downstream distribution work must satisfy; exact artifact paths, schemas, storage, and CLI details remain owned downstream.
+3. Define canonical ownership and provider-neutral discovery requirements for router and component skills; the concrete packaging/distribution path remains owned downstream.
+4. Define migration, external-lineage return, and cutover behavior for an existing DWF/PIP/IRS project.
+5. Resolve coordinated component versioning and release order.
 
 ## Acceptance criteria for a later implementation
 
@@ -197,17 +215,17 @@ A future implementation-ready version must prove at least:
 2. Design, Delivery, Topic, and implementation-record authority are unambiguous and contain no duplicate canonical owner.
 3. Machine-specific paths are local-only and the committed instance is portable across machines.
 4. DWF design work and IRS implementation work can continue without generating a PIP for same-team handoff.
-5. A PIP/external-handoff path, if retained, remains deterministic and does not silently diverge from live instance truth.
+5. The retained PIP external-handoff path is deterministic, identifies its frozen live-instance source state, and never silently synchronizes or changes authority after export.
 6. Component contracts remain independently consumable and no shared implementation runtime becomes mandatory.
 7. Windows, macOS, and Ubuntu path behavior is covered by the accepted Host/distribution contract.
 
 ## Open questions
 
-1. Does PIP remain the required external/zero-context export, and what exact command/project state produces it from a live instance?
+1. What repository-neutral source-state identity and IRS conversion contract make external export from an active project-instance run atomic, reproducible, and resumable?
 2. Is the project instance itself Git-tracked as one repository, embedded in another repository, or neutral to repository layout?
 3. What minimum information and portability guarantees must downstream local-binding and composition contracts provide to locate the DLE installation, component versions, instance root, and implementation repositories?
 4. What canonical ownership and discovery requirements must packaged skills satisfy while leaving the concrete packaging path to downstream distribution design?
-5. What migration converts an existing Workspace ZIP + PIP + IRS run into this profile without losing authority or evidence?
+5. What migration and explicit reconciliation flow converts an existing Workspace ZIP + PIP + IRS run into this profile, or returns an amended external lineage to it, without losing authority or evidence?
 6. What coordinated releases introduce the profile without invalidating current PIP consumers?
 
 ## Promotion record
