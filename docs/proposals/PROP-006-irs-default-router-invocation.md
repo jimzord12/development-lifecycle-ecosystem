@@ -14,7 +14,7 @@ decisionAuthority: repository owner
 lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9, IRS 1.3.0 / tracker state 3
 affectedComponents:
   - implementation-record-system
-nextAction: null
+nextAction: Define the bounded workspace and run discovery rule.
 ---
 
 # Proposal: IRS default router invocation

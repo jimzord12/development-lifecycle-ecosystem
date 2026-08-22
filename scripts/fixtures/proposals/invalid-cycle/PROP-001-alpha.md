@@ -12,6 +12,7 @@ decisionAuthority: repository-owner
 lastReconciledAgainst: main@abc1234
 affectedComponents:
   - dle
+nextAction: Resolve the alpha side of the known dependency cycle.
 ---
 
 # Proposal: Alpha cycle proposal

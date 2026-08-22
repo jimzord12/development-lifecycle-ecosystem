@@ -16,6 +16,7 @@
     "lint": "eslint .",
     "proposals:index": "node scripts/proposals.mjs --write",
     "proposals:check": "node scripts/proposals.mjs --check",
+    "proposals:orient": "node scripts/proposals.mjs --orient",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test:proposals": "node --test scripts/proposals.test.mjs",
     "test": "pnpm test:proposals && pnpm -r --if-present run test",

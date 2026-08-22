@@ -16,7 +16,7 @@ affectedComponents:
   - dwf
   - dsf
   - implementation-record-system
-nextAction: null
+nextAction: Decide the PIP relationship for external and zero-context handoff.
 ---
 
 # Proposal: DLE project instance consumption profile

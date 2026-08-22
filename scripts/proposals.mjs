@@ -158,10 +158,7 @@ function validateMetadata(filename, metadata) {
     issues.push(issue(filename, `${metadata.status} must omit workState`));
   }
 
-  if (
-    metadata.workState === 'CHECKPOINTED' ||
-    metadata.workState === 'PARKED'
-  ) {
+  if (unfinishedStatuses.has(metadata.status)) {
     if (
       typeof metadata.nextAction !== 'string' ||
       metadata.nextAction.trim().length === 0
@@ -169,8 +166,12 @@ function validateMetadata(filename, metadata) {
       issues.push(
         issue(
           filename,
-          `${metadata.workState} requires a non-empty nextAction`,
+          `${String(metadata.workState)} requires a non-empty nextAction`,
         ),
+      );
+    } else if (sentenceCount(metadata.nextAction) !== 1) {
+      issues.push(
+        issue(filename, 'nextAction must contain exactly one sentence'),
       );
     }
   }
@@ -410,6 +411,127 @@ export function deriveProposalSchedule(proposals) {
   };
 }
 
+function proposalEligibility(proposal, unsatisfiedDependencies) {
+  if (unfinishedStatuses.has(proposal.status)) {
+    if (proposal.workState === 'PARKED') {
+      return 'parked';
+    }
+    return unsatisfiedDependencies.length > 0 ? 'blocked' : 'eligible';
+  }
+  if (proposal.status === 'implementation-ready') {
+    return 'ready-to-materialize';
+  }
+  return 'terminal';
+}
+
+function orientProposal(proposal, proposalsById) {
+  const unsatisfiedDependencies = proposal.dependsOn.filter(
+    (dependency) =>
+      !satisfiedDependencyStatuses.has(proposalsById.get(dependency)?.status),
+  );
+  return {
+    id: proposal.id,
+    title: proposal.title,
+    status: proposal.status,
+    workState: unfinishedStatuses.has(proposal.status)
+      ? proposal.workState
+      : null,
+    priority: proposal.priority,
+    dependsOn: proposal.dependsOn,
+    unsatisfiedDependencies,
+    eligibility: proposalEligibility(proposal, unsatisfiedDependencies),
+    nextAction: unfinishedStatuses.has(proposal.status)
+      ? proposal.nextAction
+      : proposal.status === 'implementation-ready'
+        ? 'Materialize the accepted proposal into its target authoritative surfaces.'
+        : null,
+  };
+}
+
+export function deriveProposalOrientation(proposals, explicitId = null) {
+  const schedule = deriveProposalSchedule(proposals);
+  const proposalsById = new Map(
+    proposals.map((proposal) => [proposal.id, proposal]),
+  );
+  const selected = explicitId
+    ? proposalsById.get(explicitId)
+    : schedule.recommended;
+  if (explicitId && !selected) {
+    throw new Error(`unknown proposal ${explicitId}`);
+  }
+
+  const winningTier =
+    schedule.eligibleDesign.length > 0
+      ? schedule.eligibleDesign
+      : schedule.readyToMaterialize;
+  const orientedProposal = selected
+    ? orientProposal(selected, proposalsById)
+    : null;
+
+  return {
+    schemaVersion: 1,
+    mode: explicitId ? 'proposal' : 'queue',
+    proposal: orientedProposal,
+    readyAlternatives: winningTier
+      .filter(({ id }) => id !== selected?.id)
+      .map(({ id }) => id),
+    needsHumanDecision:
+      orientedProposal?.workState === 'PARKED'
+        ? orientedProposal.nextAction
+        : null,
+    mutationPerformed: false,
+  };
+}
+
+function orientationReason(orientation) {
+  const proposal = orientation.proposal;
+  if (!proposal) {
+    return 'No eligible unfinished or implementation-ready proposal exists.';
+  }
+  if (orientation.mode === 'proposal') {
+    return `Explicit selection reports the requested proposal regardless of automatic scheduling; it is ${proposal.eligibility}.`;
+  }
+  if (proposal.eligibility === 'eligible') {
+    return 'Selected first from eligible unfinished proposals by work state, priority, and proposal ID.';
+  }
+  return 'No eligible unfinished proposal exists; selected first from implementation-ready proposals by priority and proposal ID.';
+}
+
+function renderOrientedDependencies(proposal) {
+  if (!proposal || proposal.dependsOn.length === 0) {
+    return 'none';
+  }
+  const unsatisfied = new Set(proposal.unsatisfiedDependencies);
+  return proposal.dependsOn
+    .map(
+      (dependency) =>
+        `${dependency} (${unsatisfied.has(dependency) ? 'unsatisfied' : 'satisfied'})`,
+    )
+    .join(', ');
+}
+
+export function renderProposalOrientationHuman(orientation) {
+  const proposal = orientation.proposal;
+  return `Proposal orientation
+Proposal: ${proposal ? `${proposal.id} — ${proposal.title}` : 'none'}
+Lifecycle: ${proposal?.status ?? 'not applicable'}
+Work state: ${proposal?.workState ?? 'not applicable'}
+Priority: ${proposal?.priority ?? 'not applicable'}
+Dependencies: ${renderOrientedDependencies(proposal)}
+Eligibility: ${proposal?.eligibility ?? 'not applicable'}
+
+Next action: ${proposal?.nextAction ?? 'none'}
+Why: ${orientationReason(orientation)}
+Ready alternatives: ${orientation.readyAlternatives.join(', ') || 'none'}
+Needs human decision: ${orientation.needsHumanDecision ?? 'none'}
+Mutation performed: no
+`;
+}
+
+export function renderProposalOrientationJson(orientation) {
+  return `${JSON.stringify(orientation, null, 2)}\n`;
+}
+
 function escapeTableCell(value) {
   return String(value).replaceAll('|', '\\|').replaceAll('\n', ' ');
 }
@@ -515,7 +637,7 @@ Unfinished \`exploration\` and \`design-draft\` proposals also carry conversatio
 | \`CHECKPOINTED\` | Interrupted work has a durable continuation and should be resumed first when eligible. |
 | \`PARKED\` | Work is deliberately excluded from automatic next-work selection until explicitly resumed. |
 
-\`ACTIVE\` is chat-local and must never be persisted. \`CHECKPOINTED\` and \`PARKED\` require a non-empty \`nextAction\`. Completed design lifecycle states omit both \`workState\` and \`nextAction\`.
+\`ACTIVE\` is chat-local and must never be persisted. Every unfinished proposal requires a non-empty, one-sentence \`nextAction\` whose meaning matches its work state. Completed design lifecycle states omit both \`workState\` and \`nextAction\`.
 
 ## Identity, dependencies, and scheduling
 
@@ -591,24 +713,65 @@ export async function writeProposalIndex(proposals, readmePath) {
 
 function parseArguments(arguments_) {
   const options = {
-    mode: arguments_.includes('--write') ? 'write' : 'check',
+    mode: 'check',
     directory: path.resolve('docs', 'proposals'),
+    proposalId: null,
+    json: false,
   };
+  const modes = [];
   for (let index = 0; index < arguments_.length; index += 1) {
-    if (arguments_[index] === '--directory') {
+    const argument = arguments_[index];
+    if (argument === '--check') {
+      modes.push('check');
+    } else if (argument === '--write') {
+      modes.push('write');
+    } else if (argument === '--orient') {
+      modes.push('orient');
+    } else if (argument === '--directory') {
+      if (arguments_[index + 1] === undefined) {
+        throw new Error('--directory requires a path');
+      }
       options.directory = path.resolve(arguments_[index + 1]);
       index += 1;
-    } else if (arguments_[index] === '--index') {
+    } else if (argument === '--index') {
+      if (arguments_[index + 1] === undefined) {
+        throw new Error('--index requires a path');
+      }
       options.index = path.resolve(arguments_[index + 1]);
       index += 1;
+    } else if (argument === '--json') {
+      options.json = true;
+    } else if (argument.startsWith('-')) {
+      throw new Error(`unknown option ${argument}`);
+    } else if (options.proposalId) {
+      throw new Error('orientation accepts at most one proposal ID');
+    } else {
+      options.proposalId = argument;
     }
+  }
+  if (modes.length > 1) {
+    throw new Error('choose exactly one of --check, --write, or --orient');
+  }
+  options.mode = modes[0] ?? 'check';
+  if (options.json && options.mode !== 'orient') {
+    throw new Error('--json is available only with --orient');
+  }
+  if (options.proposalId && options.mode !== 'orient') {
+    throw new Error('a proposal ID is available only with --orient');
   }
   options.index ??= path.join(options.directory, 'README.md');
   return options;
 }
 
 async function main() {
-  const options = parseArguments(process.argv.slice(2));
+  let options;
+  try {
+    options = parseArguments(process.argv.slice(2));
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
+    return;
+  }
   const result = await validateProposalDirectory(options.directory);
   if (result.issues.length > 0) {
     for (const validationIssue of result.issues) {
@@ -632,6 +795,26 @@ async function main() {
       `Proposal index is stale: ${options.index}. Run pnpm proposals:index.`,
     );
     process.exitCode = 1;
+    return;
+  }
+
+  if (options.mode === 'orient') {
+    let orientation;
+    try {
+      orientation = deriveProposalOrientation(
+        result.proposals,
+        options.proposalId,
+      );
+    } catch (error) {
+      console.error(error.message);
+      process.exitCode = 1;
+      return;
+    }
+    process.stdout.write(
+      options.json
+        ? renderProposalOrientationJson(orientation)
+        : renderProposalOrientationHuman(orientation),
+    );
     return;
   }
 

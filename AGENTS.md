@@ -10,9 +10,13 @@ Do not add private company material, credentials, private repository identities,
 
 Treat checked-in specifications, decision records, schemas, fixtures, and tests as authoritative for the behavior they explicitly define. Do not invent missing semantic contracts. When required behavior is underspecified or contradictory, stop that behavior-changing work and surface the gap clearly.
 
-Drafts under [`docs/proposals/`](./docs/proposals/) are discussion material only. They are not accepted contracts. Do not implement from a proposal, and do not treat a proposal as overriding a published standard. Acceptance means the substance is promoted into a standard, schema, fixture, test, or decision record.
+Proposal records under [`docs/proposals/`](./docs/proposals/) are not authoritative contracts and never override a published standard. Do not implement an unfinished proposal. An `implementation-ready` proposal authorizes its accepted substance to be materialized into authoritative standards, contracts, schemas, fixtures, tests, or code.
 
 Proposal identity, YAML metadata, dependency, scheduling, and derived-index rules are enforced by `pnpm proposals:check`. Edit proposal frontmatter rather than hand-editing the generated proposal rows in `docs/proposals/README.md`.
+
+## Proposal workflow
+
+Follow [DLE Proposal Workflow V1](./docs/standards/dle-proposal-workflow-v1.md). Validate and run `pnpm proposals:orient` before proposal work; an explicitly selected proposal takes precedence over the automatic recommendation. Read only the selected proposal and the authority needed for its next action, keep `ACTIVE` chat-local, and persist exactly one allowed session outcome. After a metadata mutation, regenerate and validate the proposal index. Never infer authority to set `implementation-ready`, `rejected`, or `superseded`.
 
 ## Architecture
 
@@ -20,7 +24,7 @@ Proposal identity, YAML metadata, dependency, scheduling, and derived-index rule
 - First-class components occupy `packages/<component-id>/` with `dle-component.json` and a README Public Contract. Current hosted components: `packages/dwf`, `packages/dsf`, `packages/implementation-record-system`.
 - Cross-component dependencies are directional and contract-only. Monorepo co-location grants no permission to import internals. IRS may consume DSF public Delivery meaning only; DWF may prepare packages that pin DSF/DWF `.framework/` releases. Do not import component internals.
 - Companion CLIs are owned by their parent component. Delivery CLI lives at `packages/dsf/cli/` and must not be introduced as `packages/delivery-cli/`.
-- Follow [DLE Component Standard V1](./docs/standards/dle-component-standard-v1.md) and [DLE CLI Standard V1](./docs/standards/dle-cli-standard-v1.md).
+- Follow [DLE Component Standard V1](./docs/standards/dle-component-standard-v1.md), [DLE CLI Standard V1](./docs/standards/dle-cli-standard-v1.md), and [DLE Proposal Workflow V1](./docs/standards/dle-proposal-workflow-v1.md).
 - Package-local `AGENTS.md` files override this file only for that package. The nearest applicable file wins.
 
 ## Standard commands

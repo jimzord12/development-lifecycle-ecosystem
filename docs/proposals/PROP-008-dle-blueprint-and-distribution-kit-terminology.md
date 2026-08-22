@@ -13,7 +13,7 @@ decisionAuthority: repository-owner
 lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
 affectedComponents:
   - dle
-nextAction: null
+nextAction: Obtain human acceptance of the exact shorter Blueprint name.
 ---
 
 # Proposal: DLE Blueprint and Distribution Kit Terminology

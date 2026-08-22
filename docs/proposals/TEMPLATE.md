@@ -13,7 +13,7 @@ decisionAuthority: <human/project authority>
 lastReconciledAgainst: <branch-or-release>@<commit-or-version>
 affectedComponents:
   - <component-id-or-dle>
-nextAction: null
+nextAction: <one actionable sentence>
 ---
 
 # Proposal: <title>
@@ -25,9 +25,14 @@ nextAction: null
 - `dependsOn` lists direct proposal IDs only. Use `[]` when there are no proposal dependencies; keep standards, releases, and other non-proposal constraints in the body.
 - `priority` is an integer from `1` (highest) through `5` (lowest).
 - `workState` is required for unfinished `exploration` and `design-draft` proposals and is one of `PLANNED`, `CHECKPOINTED`, or `PARKED`. Never persist `ACTIVE`.
-- `nextAction` must be a non-empty string for `CHECKPOINTED` and `PARKED`; it may be `null` or omitted for `PLANNED`.
+- `nextAction` is required for every unfinished proposal and must be one non-empty, actionable sentence. For `PLANNED`, name the first concrete action; for `CHECKPOINTED`, name the exact continuation action; for `PARKED`, name the condition or decision needed to resume.
 - Omit both `workState` and `nextAction` for `implementation-ready`, `implemented`, `superseded`, and `rejected` proposals.
 - An `implementation-ready` proposal must name exact target surfaces, normative requirements, non-goals, compatibility/versioning expectations, and deterministic acceptance criteria, with no blocking open question.
+- Only the human design authority may set `implementation-ready`, `rejected`, or `superseded`.
+
+## Session-ending rule
+
+A proposal-working session ends in exactly one durable outcome: return unfinished work to `PLANNED` with a first action; save a continuation as `CHECKPOINTED`; defer it as `PARKED`; record a human-authorized lifecycle transition; complete materialization and record `implemented`; or leave the proposal unchanged after read-only work. Regenerate and validate the index after any metadata mutation.
 
 ## Summary
 

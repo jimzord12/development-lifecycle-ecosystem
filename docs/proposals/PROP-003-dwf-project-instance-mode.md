@@ -14,7 +14,7 @@ decisionAuthority: repository owner
 lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
 affectedComponents:
   - dwf
-nextAction: null
+nextAction: Finalize the Topic frontmatter and body contract and its validation rules.
 ---
 
 # Proposal: DWF project-instance mode

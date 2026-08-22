@@ -11,7 +11,7 @@ decisionAuthority: repository-owner
 lastReconciledAgainst: main@abc1234
 affectedComponents:
   - dle
-nextAction: null
+nextAction: Resolve the first remaining beta design boundary.
 ---
 
 # Proposal: Beta proposal

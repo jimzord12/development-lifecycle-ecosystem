@@ -15,7 +15,7 @@ decisionAuthority: repository owner
 lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
 affectedComponents:
   - dle
-nextAction: null
+nextAction: Specify the composition artifact path, schema, and canonical serialization.
 ---
 
 # Proposal: DLE Host and distribution

@@ -15,7 +15,7 @@ decisionAuthority: repository owner
 lastReconciledAgainst: main@b14120ec965a0a46c845bfddd9bab167062703d9
 affectedComponents:
   - implementation-record-system
-nextAction: null
+nextAction: Define project-instance profile identity and authority-change semantics.
 ---
 
 # Proposal: IRS project-instance mode

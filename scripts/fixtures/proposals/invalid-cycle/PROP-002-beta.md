@@ -12,6 +12,7 @@ decisionAuthority: repository-owner
 lastReconciledAgainst: main@abc1234
 affectedComponents:
   - dle
+nextAction: Resolve the beta side of the known dependency cycle.
 ---
 
 # Proposal: Beta cycle proposal

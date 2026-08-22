@@ -29,7 +29,7 @@ Unfinished `exploration` and `design-draft` proposals also carry conversational 
 | `CHECKPOINTED` | Interrupted work has a durable continuation and should be resumed first when eligible.     |
 | `PARKED`       | Work is deliberately excluded from automatic next-work selection until explicitly resumed. |
 
-`ACTIVE` is chat-local and must never be persisted. `CHECKPOINTED` and `PARKED` require a non-empty `nextAction`. Completed design lifecycle states omit both `workState` and `nextAction`.
+`ACTIVE` is chat-local and must never be persisted. Every unfinished proposal requires a non-empty, one-sentence `nextAction` whose meaning matches its work state. Completed design lifecycle states omit both `workState` and `nextAction`.
 
 ## Identity, dependencies, and scheduling
 
