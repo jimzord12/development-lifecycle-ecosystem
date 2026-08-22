@@ -22,7 +22,7 @@ affectedComponents:
 
 Make the current DLE surfaces provider-, model-, and modern-harness-agnostic with the smallest justified refactor. Define three lightweight model capability profiles, make the coding agent the plain-language translation layer between DLE and the user, remove hard dependencies on one harness's instruction filename or orchestration terminology, and add a bounded portability check. Do not create an adapter framework, capability matrix, mandatory user profile, or model configuration subsystem.
 
-This proposal is intentionally narrow. It does not redesign project instances, Portable Implementation Packages, DWF persistence, IRS package identity, component distribution, or the DLE Host CLI.
+This proposal is intentionally narrow. It does not redesign project instances, legacy Portable Implementation Packages, DWF persistence, released IRS package identity, component distribution, the DLE Distribution Kit, or its umbrella-owned `dle` CLI.
 
 ## Baseline and compatibility target
 
@@ -192,9 +192,9 @@ This proposal does not add or change:
 
 - project-instance layout or same-team consumption;
 - DWF Topics or direct-on-disk persistence;
-- PIP, Amendment, or Design Gap semantics;
-- IRS package identity or tracker schema;
-- Host CLI, component composition, distribution, or installation;
+- legacy PIP or Amendment semantics, or Design Gap semantics;
+- released IRS package identity or tracker schema;
+- the DLE Distribution Kit, umbrella `dle` CLI, component composition, distribution, or installation;
 - a general agent adapter API;
 - a harness compatibility certification matrix;
 - support for weak/legacy harnesses;

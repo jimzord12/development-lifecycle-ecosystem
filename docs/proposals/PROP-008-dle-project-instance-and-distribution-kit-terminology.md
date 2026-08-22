@@ -66,11 +66,11 @@ This proposal chooses names. It does not make detailed project-instance behavior
 
 The terms are used as follows:
 
-| Term | Meaning |
-| --- | --- |
-| **DLE project instance model** | The umbrella-level model for durable project authority, portability, component boundaries, and continuation. |
-| **DLE Distribution Kit** | The curated distribution, bootstrap, integrity, binding, routing, and discovery concept that supports DLE project instances. |
-| `dle` CLI | An umbrella-owned executable surface provided through the Distribution Kit. |
+| Term                           | Meaning                                                                                                                      |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| **DLE project instance model** | The umbrella-level model for durable project authority, portability, component boundaries, and continuation.                 |
+| **DLE Distribution Kit**       | The curated distribution, bootstrap, integrity, binding, routing, and discovery concept that supports DLE project instances. |
+| `dle` CLI                      | An umbrella-owned executable surface provided through the Distribution Kit.                                                  |
 
 ## Compatibility
 

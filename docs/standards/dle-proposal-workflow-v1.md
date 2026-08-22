@@ -175,17 +175,17 @@ JSON output uses this exact top-level shape:
   "schemaVersion": 1,
   "mode": "queue",
   "proposal": {
-    "id": "PROP-002",
-    "title": "DLE project instance consumption profile",
+    "id": "PROP-123",
+    "title": "Illustrative proposal",
     "status": "design-draft",
     "workState": "PLANNED",
     "priority": 3,
     "dependsOn": [],
     "unsatisfiedDependencies": [],
     "eligibility": "eligible",
-    "nextAction": "Decide the PIP relationship for external and zero-context handoff."
+    "nextAction": "Specify the first unresolved contract boundary."
   },
-  "readyAlternatives": ["PROP-006", "PROP-008"],
+  "readyAlternatives": ["PROP-124", "PROP-125"],
   "needsHumanDecision": null,
   "mutationPerformed": false
 }
