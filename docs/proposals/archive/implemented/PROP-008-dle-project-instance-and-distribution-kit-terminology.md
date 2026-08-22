@@ -1,7 +1,7 @@
 ---
 id: PROP-008
 title: DLE project instance model and Distribution Kit terminology
-status: implementation-ready
+status: implemented
 priority: 3
 summary: >-
   Adopt DLE project instance model and DLE Distribution Kit as the simple,
@@ -87,4 +87,13 @@ These proposal and documentation renames do not by themselves change a released 
 
 ## Promotion Record
 
-Not implemented.
+Implemented by commit `ab7db84cf703d2c830e6de454ee95df5d6383fa6` (`docs: establish DLE project instance model`).
+
+Authoritative repository surfaces:
+
+- accepted project-instance terminology and boundaries in `docs/proposals/PROP-001-dle-agent-ux-and-harness-agnosticism.md` and `docs/proposals/PROP-002-dle-project-instance-model.md`;
+- reconciled DWF, IRS, Distribution Kit, and next-action designs in `docs/proposals/PROP-003-dwf-project-instance-workflow.md`, `docs/proposals/PROP-004-irs-project-instance-runs.md`, `docs/proposals/PROP-005-dle-distribution-kit.md`, and `docs/proposals/PROP-006-irs-next-action-orientation.md`;
+- the neutral orientation example in `docs/standards/dle-proposal-workflow-v1.md`; and
+- recursively generated proposal navigation in `docs/proposals/README.md`.
+
+No released first-class component contract or version changed.
