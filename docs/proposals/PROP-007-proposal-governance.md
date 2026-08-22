@@ -1,7 +1,7 @@
 ---
 id: PROP-007
 title: DLE proposal identity, dependency, and work-state governance
-status: implementation-ready
+status: implemented
 priority: 1
 summary: >-
   Introduce immutable PROP-NNN identifiers, YAML-owned proposal metadata, an acyclic dependency graph, explicit priority, and separate conversational work state. Derive the proposal index and next-work recommendation from proposal files and validate the model deterministically.
@@ -261,4 +261,13 @@ None that block implementation.
 
 ## Promotion Record
 
-Not implemented.
+Implemented by commit `e2010a0f849584a76390e52581c1ee7b075171dd` (`feat: add deterministic proposal governance`).
+
+Authoritative repository surfaces:
+
+- proposal identity and metadata in `docs/proposals/PROP-*.md`;
+- authoring rules in `docs/proposals/TEMPLATE.md`;
+- the derived orientation index in `docs/proposals/README.md`;
+- deterministic parsing, validation, scheduling, and index generation in `scripts/proposals.mjs`;
+- governance tests and fixtures under `scripts/`; and
+- root package commands, including proposal checking in `pnpm validate`.
