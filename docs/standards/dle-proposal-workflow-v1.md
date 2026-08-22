@@ -6,7 +6,7 @@ It defines how humans and coding agents orient to, select, advance, pause, promo
 
 ## 1. Authority and scope
 
-Proposal files own proposal-specific design, metadata, and historical records. The generated proposal index is a deterministic projection and is never a second metadata authority.
+Proposal files own proposal-specific design, metadata, and historical records. The generated proposal index is a deterministic projection of recursively discovered proposals and is never a second metadata authority. Proposal IDs are stable identity; a path changes when lifecycle metadata projects a terminal record into its required archive.
 
 A proposal does not become runtime or component authority by itself. An `implementation-ready` status authorizes the proposal's accepted substance to be materialized into standards, public contracts, schemas, fixtures, tests, code, or other authoritative repository surfaces. Those destinations become authoritative only when materialization is complete and recorded.
 
@@ -26,14 +26,16 @@ Proposal identity, lifecycle, dependency, priority, and work-state metadata rema
 
 V1 recognizes these lifecycle statuses:
 
-| Status                 | Workflow meaning                                                                     |
-| ---------------------- | ------------------------------------------------------------------------------------ |
-| `exploration`          | Unfinished design with major boundaries or decisions still open.                     |
-| `design-draft`         | Unfinished coherent design that is not authorized for implementation.                |
-| `implementation-ready` | Human-accepted design authorized for materialization.                                |
-| `implemented`          | Accepted substance is present in authoritative surfaces and its landing is recorded. |
-| `superseded`           | Terminal proposal replaced by a newer proposal.                                      |
-| `rejected`             | Terminal proposal deliberately declined.                                             |
+| Status                 | Workflow meaning                                                                     | Required location                     |
+| ---------------------- | ------------------------------------------------------------------------------------ | ------------------------------------- |
+| `exploration`          | Unfinished design with major boundaries or decisions still open.                     | `docs/proposals/`                     |
+| `design-draft`         | Unfinished coherent design that is not authorized for implementation.                | `docs/proposals/`                     |
+| `implementation-ready` | Human-accepted design authorized for materialization.                                | `docs/proposals/`                     |
+| `implemented`          | Accepted substance is present in authoritative surfaces and its landing is recorded. | `docs/proposals/archive/implemented/` |
+| `superseded`           | Terminal proposal replaced by a newer proposal.                                      | `docs/proposals/archive/superseded/`  |
+| `rejected`             | Terminal proposal deliberately declined.                                             | `docs/proposals/archive/rejected/`    |
+
+Lifecycle frontmatter is authoritative; directory placement is a validated projection. Work state, priority, component, assignee, year, and topic do not create directories. Create a terminal directory only when its first proposal moves there, without placeholder files.
 
 Only `exploration` and `design-draft` are unfinished. They must persist exactly one `workState`: `PLANNED`, `CHECKPOINTED`, or `PARKED`.
 
@@ -77,6 +79,8 @@ Queue selection and local continuation answer different questions:
 
 An explicitly named proposal takes precedence over the automatic recommendation. Orientation reports that proposal even when it is blocked, parked, implementation-ready, or terminal. It must not silently substitute another proposal.
 
+Explicit selection resolves the immutable proposal ID across both the active root and terminal archives. An archived terminal result has `eligibility: terminal`, `workState: null`, and `nextAction: null`; orientation recommends no mutation.
+
 Explicit selection does not change queue ordering. `readyAlternatives` is still derived from the automatic queue tier and excludes the explicitly selected ID when that ID belongs to the tier.
 
 ### 4.2 Automatic queue selection
@@ -99,6 +103,8 @@ Implementation-ready proposals sort by lower priority number and then lower prop
 `readyAlternatives` contains the remaining selectable proposal IDs from the winning tier only, in that tier's deterministic order. It does not mix implementation-ready fallback work into a non-empty unfinished tier.
 
 When neither tier contains a proposal, orientation succeeds with no recommendation. It must not invent work.
+
+Terminal proposals never participate in either automatic selection tier.
 
 ### 4.3 Reported eligibility
 
@@ -128,11 +134,15 @@ Do not persist generic instructions such as "continue work," multi-step plans, c
 
 `implementation-ready`, `implemented`, `superseded`, and `rejected` proposals must omit both `workState` and `nextAction`. Orientation derives the materialization action for `implementation-ready` proposals and reports no next action for terminal proposals.
 
+Terminal proposals do not reopen. Further design uses a new monotonic proposal ID and records historical replacement with `supersedes` when applicable.
+
 ## 6. Read-only orientation contract
 
 Orientation must not modify a proposal, generated index, timestamp, cache, or any other repository state. Every successful human and JSON result reports that no mutation occurred.
 
 Before emitting a recommendation, orientation must validate proposal metadata and the dependency graph and confirm that the generated index is current. Invalid metadata, a graph cycle, a stale index, or an unknown explicit ID fails with a non-zero result and no recommendation.
+
+Validation recursively discovers proposal Markdown files below `docs/proposals/`, excluding recognized navigation and template files. It validates unique IDs and dependency relationships across the complete set, exact lifecycle location, local Markdown links from both root and archived proposal files, and index links derived from each discovered relative path. Discovery order must not affect validation, scheduling, orientation, the next monotonic ID, or generated output.
 
 ### 6.1 Human result
 
@@ -229,6 +239,8 @@ pnpm proposals:check
 
 Do not stop after changing proposal metadata while leaving the generated index stale.
 
+When the durable outcome is terminal, metadata, body record, path, links, and generated navigation form one coherent transition. Use a Git-aware move into the exact status directory, update every repository link to the new path, and do not push an intermediate metadata/path mismatch.
+
 ## 8. Human authority gates
 
 Only the human design authority may set a proposal to:
@@ -254,14 +266,18 @@ Use this closeout sequence:
 
 1. implement the accepted substance;
 2. regenerate derived proposal navigation after metadata changes;
-3. run focused and full required validation;
+3. run focused proposal link/metadata checks and full required validation;
 4. commit the implementation-completing authoritative change;
-5. change the proposal status to `implemented`;
+5. change the proposal status to `implemented` and remove continuation metadata;
 6. complete its Promotion Record with the implementation commit and authoritative destinations;
-7. regenerate and revalidate the proposal index; and
-8. commit the promotion record.
+7. use `git mv` to move the proposal into `docs/proposals/archive/implemented/`;
+8. update every repository link to its new path;
+9. regenerate the index and repeat focused plus full validation; and
+10. commit the Promotion Record, lifecycle change, move, link updates, and generated index together.
 
 Do not mark a proposal `implemented` because work merely started, tests partially pass, or an implementation plan exists.
+
+Human-authorized `superseded` and `rejected` transitions use the same atomic metadata/body/link/index/move discipline and their matching archive directory. Never leave a terminal proposal at the root, move unfinished work into an archive, restore a terminal proposal to the root, or add redirect stubs, duplicate copies, symlinks, junctions, generated mirrors, or an ID-to-path registry.
 
 ## 10. Compatibility and non-goals
 

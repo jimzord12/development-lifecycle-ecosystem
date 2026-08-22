@@ -21,6 +21,7 @@ nextAction: <one actionable sentence>
 ## Frontmatter rules
 
 - Replace `PROP-NNN` with the next monotonic proposal ID. IDs are immutable and never reused; filenames use `PROP-NNN-<slug>.md`.
+- Create `exploration`, `design-draft`, and `implementation-ready` proposals directly under `docs/proposals/`. Recursively discovered terminal proposals live exactly under `docs/proposals/archive/implemented/`, `docs/proposals/archive/superseded/`, or `docs/proposals/archive/rejected/` according to status.
 - `summary` is required and contains one to three sentences.
 - `dependsOn` lists direct proposal IDs only. Use `[]` when there are no proposal dependencies; keep standards, releases, and other non-proposal constraints in the body.
 - `priority` is an integer from `1` (highest) through `5` (lowest).
@@ -29,10 +30,13 @@ nextAction: <one actionable sentence>
 - Omit both `workState` and `nextAction` for `implementation-ready`, `implemented`, `superseded`, and `rejected` proposals.
 - An `implementation-ready` proposal must name exact target surfaces, normative requirements, non-goals, compatibility/versioning expectations, and deterministic acceptance criteria, with no blocking open question.
 - Only the human design authority may set `implementation-ready`, `rejected`, or `superseded`.
+- An `implemented`, `superseded`, or `rejected` proposal is terminal and must not return to the proposal root or an unfinished status. Use a new monotonic proposal ID for follow-up design and record historical replacement through `supersedes` when applicable.
 
 ## Session-ending rule
 
 A proposal-working session ends in exactly one durable outcome: return unfinished work to `PLANNED` with a first action; save a continuation as `CHECKPOINTED`; defer it as `PARKED`; record a human-authorized lifecycle transition; complete materialization and record `implemented`; or leave the proposal unchanged after read-only work. Regenerate and validate the index after any metadata mutation.
+
+A terminal transition atomically updates lifecycle metadata and the matching body record, removes `workState` and `nextAction`, uses `git mv` into the exact status archive to preserve history, updates every repository link to the moved path, regenerates the root index, and runs proposal link and metadata validation. Do not leave a terminal record at the root or add a redirect, duplicate, symlink, junction, path registry, or placeholder archive directory.
 
 ## Summary
 

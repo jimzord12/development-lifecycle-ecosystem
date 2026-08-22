@@ -6,6 +6,8 @@
 
 A proposal is not automatically runtime authority. Published standards, component Public Contracts, schemas, fixtures, tests, and released code remain authoritative until accepted substance is promoted into those surfaces.
 
+Actionable proposals remain at this directory root. Terminal proposals are retained under `archive/implemented/`, `archive/superseded/`, or `archive/rejected/` according to lifecycle metadata.
+
 ## Lifecycle
 
 | Status                 | Meaning                                                                         |
@@ -35,12 +37,15 @@ Unfinished `exploration` and `design-draft` proposals also carry conversational 
 
 - IDs use immutable, monotonic `PROP-NNN` values and are never reused.
 - Filenames use `PROP-NNN-<slug>.md`; a title or slug rename never changes the ID.
+- Proposal discovery is recursive; paths may change on terminal transition, but IDs do not.
 - `dependsOn` contains direct proposal IDs only. Reverse relationships are derived, and there is no separate graph authority.
 - Dependencies must exist, must not reference the proposal itself, and must form an acyclic graph.
 - Priority is an integer from `1` (highest) through `5` (lowest).
 - An unfinished proposal is dependency-eligible when every direct dependency is `implementation-ready` or `implemented`.
 - Eligible work sorts by `CHECKPOINTED`, then `PLANNED`; excludes `PARKED`; then sorts by lower priority number and lower proposal ID.
 - `implementation-ready` work appears separately as **Ready to Materialize**. It becomes the fallback recommendation only when no unfinished design proposal is eligible.
+
+Next proposal ID: `PROP-011`.
 
 Validate metadata, graph integrity, and this derived index with:
 
@@ -80,10 +85,10 @@ Recommended next work: [PROP-002 — DLE project instance consumption profile](.
 
 ## Implemented
 
-| Proposal                                                                                                     | Status        | Priority | Direct dependencies | Summary                                                                                                                                                                                                                                                                                                 |
-| ------------------------------------------------------------------------------------------------------------ | ------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [PROP-007 — DLE proposal identity, dependency, and work-state governance](./PROP-007-proposal-governance.md) | `implemented` | 1        | none                | Introduce immutable PROP-NNN identifiers, YAML-owned proposal metadata, an acyclic dependency graph, explicit priority, and separate conversational work state. Derive the proposal index and next-work recommendation from proposal files and validate the model deterministically.                    |
-| [PROP-009 — DLE Proposal Workflow V1](./PROP-009-dle-proposal-workflow.md)                                   | `implemented` | 1        | `PROP-007`          | Establish one explicit human-and-agent workflow for orienting, selecting, advancing, checkpointing, parking, promoting, materializing, and closing DLE proposals. Require an actionable continuation for every unfinished proposal and add deterministic read-only orientation in human and JSON forms. |
+| Proposal                                                                                                                         | Status        | Priority | Direct dependencies | Summary                                                                                                                                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------- | -------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [PROP-007 — DLE proposal identity, dependency, and work-state governance](./archive/implemented/PROP-007-proposal-governance.md) | `implemented` | 1        | none                | Introduce immutable PROP-NNN identifiers, YAML-owned proposal metadata, an acyclic dependency graph, explicit priority, and separate conversational work state. Derive the proposal index and next-work recommendation from proposal files and validate the model deterministically.                    |
+| [PROP-009 — DLE Proposal Workflow V1](./archive/implemented/PROP-009-dle-proposal-workflow.md)                                   | `implemented` | 1        | `PROP-007`          | Establish one explicit human-and-agent workflow for orienting, selecting, advancing, checkpointing, parking, promoting, materializing, and closing DLE proposals. Require an actionable continuation for every unfinished proposal and add deterministic read-only orientation in human and JSON forms. |
 
 ## Superseded or Rejected
 

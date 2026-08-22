@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -39,6 +39,12 @@ const requiredFields = [
 ];
 const proposalIdPattern = /^PROP-\d{3}$/;
 const proposalFilenamePattern = /^PROP-\d{3}-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
+const proposalNavigationFilenames = new Set(['README.md', 'TEMPLATE.md']);
+const terminalStatusDirectories = new Map([
+  ['implemented', 'archive/implemented'],
+  ['superseded', 'archive/superseded'],
+  ['rejected', 'archive/rejected'],
+]);
 
 function hasOwn(value, key) {
   return Object.prototype.hasOwnProperty.call(value, key);
@@ -46,6 +52,40 @@ function hasOwn(value, key) {
 
 function issue(file, message) {
   return { file, message };
+}
+
+function normalizeRelativePath(relativePath) {
+  return relativePath.split(path.sep).join('/');
+}
+
+async function discoverProposalFiles(directory) {
+  const discovered = [];
+
+  async function visit(currentDirectory, relativeDirectory = '') {
+    const entries = await readdir(currentDirectory, { withFileTypes: true });
+    entries.sort((left, right) => left.name.localeCompare(right.name));
+
+    for (const entry of entries) {
+      const relativePath = path.join(relativeDirectory, entry.name);
+      const absolutePath = path.join(currentDirectory, entry.name);
+      if (entry.isDirectory()) {
+        await visit(absolutePath, relativePath);
+      } else if (
+        entry.isFile() &&
+        entry.name.endsWith('.md') &&
+        !proposalNavigationFilenames.has(entry.name)
+      ) {
+        discovered.push({
+          absolutePath,
+          filename: entry.name,
+          relativePath: normalizeRelativePath(relativePath),
+        });
+      }
+    }
+  }
+
+  await visit(directory);
+  return discovered;
 }
 
 function parseFrontmatter(filename, contents) {
@@ -82,7 +122,11 @@ function parseFrontmatter(filename, contents) {
     };
   }
 
-  return { metadata, issues: [] };
+  return {
+    body: contents.slice(match[0].length),
+    metadata,
+    issues: [],
+  };
 }
 
 function sentenceCount(summary) {
@@ -110,6 +154,7 @@ function validateStringArray(filename, metadata, field, issues) {
 
 function validateMetadata(filename, metadata) {
   const issues = [];
+  const proposalFilename = path.posix.basename(filename);
 
   for (const field of requiredFields) {
     if (!hasOwn(metadata, field)) {
@@ -120,12 +165,12 @@ function validateMetadata(filename, metadata) {
   if (typeof metadata.id !== 'string' || !proposalIdPattern.test(metadata.id)) {
     issues.push(issue(filename, 'id must match PROP-NNN'));
   } else {
-    if (!proposalFilenamePattern.test(filename)) {
+    if (!proposalFilenamePattern.test(proposalFilename)) {
       issues.push(
         issue(filename, 'filename must match PROP-NNN-lowercase-slug.md'),
       );
     }
-    if (!filename.startsWith(`${metadata.id}-`)) {
+    if (!proposalFilename.startsWith(`${metadata.id}-`)) {
       issues.push(issue(filename, `filename must start with ${metadata.id}-`));
     }
   }
@@ -141,6 +186,18 @@ function validateMetadata(filename, metadata) {
 
   if (!lifecycleStatuses.has(metadata.status)) {
     issues.push(issue(filename, `invalid status ${String(metadata.status)}`));
+  } else {
+    const actualDirectory = path.posix.dirname(filename);
+    const terminalDirectory = terminalStatusDirectories.get(metadata.status);
+    if (terminalDirectory && actualDirectory !== terminalDirectory) {
+      issues.push(
+        issue(filename, `${metadata.status} must be in ${terminalDirectory}`),
+      );
+    } else if (!terminalDirectory && actualDirectory !== '.') {
+      issues.push(
+        issue(filename, `${metadata.status} must be in the proposal root`),
+      );
+    }
   }
 
   if (unfinishedStatuses.has(metadata.status)) {
@@ -226,8 +283,8 @@ function validateRelationships(proposals) {
     if (existing) {
       issues.push(
         issue(
-          proposal.filename,
-          `duplicate proposal ID ${proposal.id}; also used by ${existing.filename}`,
+          proposal.relativePath,
+          `duplicate proposal ID ${proposal.id}; also used by ${existing.relativePath}`,
         ),
       );
       continue;
@@ -244,7 +301,7 @@ function validateRelationships(proposals) {
       if (seenDependencies.has(dependency)) {
         issues.push(
           issue(
-            proposal.filename,
+            proposal.relativePath,
             `duplicate dependency ${String(dependency)}`,
           ),
         );
@@ -253,7 +310,10 @@ function validateRelationships(proposals) {
 
       if (dependency === proposal.id) {
         issues.push(
-          issue(proposal.filename, `${proposal.id} must not depend on itself`),
+          issue(
+            proposal.relativePath,
+            `${proposal.id} must not depend on itself`,
+          ),
         );
       } else if (
         typeof dependency === 'string' &&
@@ -261,7 +321,7 @@ function validateRelationships(proposals) {
       ) {
         issues.push(
           issue(
-            proposal.filename,
+            proposal.relativePath,
             `${proposal.id} depends on unknown proposal ${dependency}`,
           ),
         );
@@ -304,7 +364,7 @@ function validateRelationships(proposals) {
   if (cycle) {
     issues.push(
       issue(
-        proposalsById.get(cycle[0]).filename,
+        proposalsById.get(cycle[0]).relativePath,
         `dependency cycle: ${cycle.join(' -> ')}`,
       ),
     );
@@ -313,43 +373,293 @@ function validateRelationships(proposals) {
   return issues;
 }
 
+function maskMarkdownCode(contents) {
+  const lines = contents.split(/(?<=\n)/);
+  let fence = null;
+  const withoutFences = lines
+    .map((line) => {
+      const marker = line.match(/^ {0,3}(`{3,}|~{3,})/u)?.[1] ?? null;
+      if (fence) {
+        if (marker?.[0] === fence.character && marker.length >= fence.length) {
+          fence = null;
+        }
+        return line.replace(/[^\r\n]/g, ' ');
+      }
+      if (marker) {
+        fence = { character: marker[0], length: marker.length };
+        return line.replace(/[^\r\n]/g, ' ');
+      }
+      if (/^(?: {4}|\t)/u.test(line)) {
+        return line.replace(/[^\r\n]/g, ' ');
+      }
+      return line;
+    })
+    .join('');
+
+  const characters = withoutFences.split('');
+  for (let index = 0; index < characters.length; index += 1) {
+    if (characters[index] !== '`') {
+      continue;
+    }
+    let runLength = 1;
+    while (characters[index + runLength] === '`') {
+      runLength += 1;
+    }
+    const delimiter = '`'.repeat(runLength);
+    const closingIndex = withoutFences.indexOf(delimiter, index + runLength);
+    if (closingIndex === -1) {
+      index += runLength - 1;
+      continue;
+    }
+    for (
+      let maskedIndex = index;
+      maskedIndex < closingIndex + runLength;
+      maskedIndex += 1
+    ) {
+      if (!['\r', '\n'].includes(characters[maskedIndex])) {
+        characters[maskedIndex] = ' ';
+      }
+    }
+    index = closingIndex + runLength - 1;
+  }
+  return characters.join('');
+}
+
+function parseMarkdownDestination(source, startIndex, inline) {
+  let index = startIndex;
+  while (/[ \t\r\n]/u.test(source[index] ?? '')) {
+    index += 1;
+  }
+  if (source[index] === '<') {
+    const targetStart = index + 1;
+    index = targetStart;
+    while (index < source.length) {
+      if (source[index] === '\\') {
+        index += 2;
+      } else if (source[index] === '>') {
+        return {
+          endIndex: index + 1,
+          target: source.slice(targetStart, index),
+        };
+      } else {
+        index += 1;
+      }
+    }
+    return null;
+  }
+
+  const targetStart = index;
+  let parenthesisDepth = 0;
+  while (index < source.length) {
+    const character = source[index];
+    if (character === '\\') {
+      index += 2;
+      continue;
+    }
+    if (character === '(') {
+      parenthesisDepth += 1;
+    } else if (character === ')') {
+      if (inline && parenthesisDepth === 0) {
+        break;
+      }
+      if (parenthesisDepth > 0) {
+        parenthesisDepth -= 1;
+      }
+    } else if (/\s/u.test(character) && parenthesisDepth === 0) {
+      break;
+    }
+    index += 1;
+  }
+
+  if (index === targetStart || parenthesisDepth !== 0) {
+    return null;
+  }
+  return { endIndex: index, target: source.slice(targetStart, index) };
+}
+
+function localMarkdownTargets(contents) {
+  const markdown = maskMarkdownCode(contents);
+  const targets = [];
+
+  for (let index = 0; index < markdown.length - 1; index += 1) {
+    if (markdown[index] !== ']' || markdown[index + 1] !== '(') {
+      continue;
+    }
+    const parsed = parseMarkdownDestination(markdown, index + 2, true);
+    if (parsed) {
+      targets.push(parsed.target);
+      index = parsed.endIndex;
+    }
+  }
+
+  const referenceDefinitionPattern = /^ {0,3}\[[^\]\r\n]+\]:[ \t]*/gmu;
+  for (const match of markdown.matchAll(referenceDefinitionPattern)) {
+    const parsed = parseMarkdownDestination(
+      markdown,
+      match.index + match[0].length,
+      false,
+    );
+    if (parsed) {
+      targets.push(parsed.target);
+    }
+  }
+
+  return targets;
+}
+
+function classifyLocalTarget(target) {
+  if (
+    target.startsWith('#') ||
+    target.startsWith('/') ||
+    target.startsWith('//') ||
+    /^[a-z][a-z\d+.-]*:/iu.test(target)
+  ) {
+    return null;
+  }
+
+  const encodedPath = target.split(/[?#]/u, 1)[0];
+  if (!encodedPath) {
+    return null;
+  }
+  try {
+    const decodedPath = decodeURIComponent(encodedPath).replace(
+      /\\([\\()[\]{}<> ])/gu,
+      '$1',
+    );
+    return decodedPath.includes('\\')
+      ? { malformed: true, target }
+      : { pathOnly: decodedPath, target };
+  } catch {
+    return { malformed: true, target };
+  }
+}
+
+function staysWithin(root, target) {
+  const relativePath = path.relative(root, target);
+  return (
+    relativePath === '' ||
+    (!path.isAbsolute(relativePath) &&
+      relativePath !== '..' &&
+      !relativePath.startsWith(`..${path.sep}`))
+  );
+}
+
+async function isExactFileOrDirectory(targetPath, repositoryRoot, cache) {
+  const relativePath = path.relative(repositoryRoot, targetPath);
+  let currentPath = repositoryRoot;
+  for (const segment of relativePath.split(path.sep).filter(Boolean)) {
+    let names = cache.get(currentPath);
+    if (!names) {
+      try {
+        names = new Set(await readdir(currentPath));
+      } catch (error) {
+        if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
+          return false;
+        }
+        throw error;
+      }
+      cache.set(currentPath, names);
+    }
+    if (!names.has(segment)) {
+      return false;
+    }
+    currentPath = path.join(currentPath, segment);
+  }
+
+  try {
+    const targetStat = await stat(currentPath);
+    return targetStat.isFile() || targetStat.isDirectory();
+  } catch (error) {
+    if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
+      return false;
+    }
+    throw error;
+  }
+}
+
+async function validateProposalLinks(directory, proposals, contentsByPath) {
+  const issues = [];
+  const repositoryRoot = path.resolve(directory, '..', '..');
+  const directoryEntriesCache = new Map();
+
+  for (const proposal of proposals) {
+    const sourcePath = path.join(
+      directory,
+      ...proposal.relativePath.split('/'),
+    );
+    const contents = contentsByPath.get(proposal.relativePath);
+    for (const target of localMarkdownTargets(contents)) {
+      const localTarget = classifyLocalTarget(target);
+      if (!localTarget) {
+        continue;
+      }
+      if (localTarget.malformed) {
+        issues.push(
+          issue(proposal.relativePath, `malformed local link ${target}`),
+        );
+        continue;
+      }
+
+      const targetPath = path.resolve(
+        path.dirname(sourcePath),
+        localTarget.pathOnly,
+      );
+      if (
+        !staysWithin(repositoryRoot, targetPath) ||
+        !(await isExactFileOrDirectory(
+          targetPath,
+          repositoryRoot,
+          directoryEntriesCache,
+        ))
+      ) {
+        issues.push(
+          issue(proposal.relativePath, `broken local link ${target}`),
+        );
+      }
+    }
+  }
+
+  return issues;
+}
+
 export async function validateProposalDirectory(directory) {
-  const directoryEntries = await readdir(directory, { withFileTypes: true });
-  const filenames = directoryEntries
-    .filter(
-      (entry) =>
-        entry.isFile() &&
-        entry.name.endsWith('.md') &&
-        entry.name !== 'README.md' &&
-        entry.name !== 'TEMPLATE.md',
-    )
-    .map(({ name }) => name)
-    .sort();
+  const discoveredFiles = await discoverProposalFiles(directory);
   const proposals = [];
   const issues = [];
+  const contentsByPath = new Map();
 
-  for (const filename of filenames) {
-    const contents = await readFile(path.join(directory, filename), 'utf8');
-    const parsed = parseFrontmatter(filename, contents);
+  for (const { absolutePath, filename, relativePath } of discoveredFiles) {
+    const contents = await readFile(absolutePath, 'utf8');
+    const parsed = parseFrontmatter(relativePath, contents);
     issues.push(...parsed.issues);
     if (!parsed.metadata) {
       continue;
     }
 
-    issues.push(...validateMetadata(filename, parsed.metadata));
+    contentsByPath.set(relativePath, parsed.body);
+    issues.push(...validateMetadata(relativePath, parsed.metadata));
     proposals.push({
       ...parsed.metadata,
       filename,
+      relativePath,
     });
   }
 
   issues.push(...validateRelationships(proposals));
-  return {
-    proposals: proposals.sort((left, right) =>
-      String(left.id ?? left.filename).localeCompare(
-        String(right.id ?? right.filename),
-      ),
+  const sortedProposals = proposals.sort((left, right) =>
+    String(left.id ?? left.relativePath).localeCompare(
+      String(right.id ?? right.relativePath),
     ),
+  );
+  issues.push(
+    ...(await validateProposalLinks(
+      directory,
+      sortedProposals,
+      contentsByPath,
+    )),
+  );
+  return {
+    proposals: sortedProposals,
     issues,
   };
 }
@@ -537,7 +847,18 @@ function escapeTableCell(value) {
 }
 
 function proposalLink(proposal) {
-  return `[${proposal.id} — ${proposal.title}](./${proposal.filename})`;
+  return `[${proposal.id} — ${proposal.title}](./${proposal.relativePath})`;
+}
+
+export function deriveNextProposalId(proposals) {
+  const highestProposalNumber = proposals.reduce(
+    (highest, proposal) =>
+      proposalIdPattern.test(proposal.id)
+        ? Math.max(highest, proposalNumber(proposal.id))
+        : highest,
+    0,
+  );
+  return `PROP-${String(highestProposalNumber + 1).padStart(3, '0')}`;
 }
 
 function renderDependencies(proposal) {
@@ -568,6 +889,7 @@ function renderProposalTable(proposals, columns) {
 
 function renderProposalIndexSource(proposals) {
   const schedule = deriveProposalSchedule(proposals);
+  const nextProposalId = deriveNextProposalId(proposals);
   const implemented = proposals.filter(
     ({ status }) => status === 'implemented',
   );
@@ -614,6 +936,8 @@ function renderProposalIndexSource(proposals) {
 
 A proposal is not automatically runtime authority. Published standards, component Public Contracts, schemas, fixtures, tests, and released code remain authoritative until accepted substance is promoted into those surfaces.
 
+Actionable proposals remain at this directory root. Terminal proposals are retained under \`archive/implemented/\`, \`archive/superseded/\`, or \`archive/rejected/\` according to lifecycle metadata.
+
 ## Lifecycle
 
 | Status | Meaning |
@@ -643,12 +967,15 @@ Unfinished \`exploration\` and \`design-draft\` proposals also carry conversatio
 
 - IDs use immutable, monotonic \`PROP-NNN\` values and are never reused.
 - Filenames use \`PROP-NNN-<slug>.md\`; a title or slug rename never changes the ID.
+- Proposal discovery is recursive; paths may change on terminal transition, but IDs do not.
 - \`dependsOn\` contains direct proposal IDs only. Reverse relationships are derived, and there is no separate graph authority.
 - Dependencies must exist, must not reference the proposal itself, and must form an acyclic graph.
 - Priority is an integer from \`1\` (highest) through \`5\` (lowest).
 - An unfinished proposal is dependency-eligible when every direct dependency is \`implementation-ready\` or \`implemented\`.
 - Eligible work sorts by \`CHECKPOINTED\`, then \`PLANNED\`; excludes \`PARKED\`; then sorts by lower priority number and lower proposal ID.
 - \`implementation-ready\` work appears separately as **Ready to Materialize**. It becomes the fallback recommendation only when no unfinished design proposal is eligible.
+
+Next proposal ID: \`${nextProposalId}\`.
 
 Validate metadata, graph integrity, and this derived index with:
 
@@ -819,7 +1146,7 @@ async function main() {
   }
 
   console.log(
-    `Validated ${result.proposals.length} proposals: unique IDs, acyclic graph, current index.`,
+    `Validated ${result.proposals.length} proposals: recursive paths, lifecycle locations, local links, unique IDs, acyclic graph, current index.`,
   );
 }
 

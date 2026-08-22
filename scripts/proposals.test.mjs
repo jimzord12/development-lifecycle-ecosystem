@@ -86,9 +86,11 @@ async function createProposalDirectory(t, files) {
   const directory = path.join(root, 'docs', 'proposals');
   await mkdir(directory, { recursive: true });
   await Promise.all(
-    Object.entries(files).map(([name, contents]) =>
-      writeFile(path.join(directory, name), contents, 'utf8'),
-    ),
+    Object.entries(files).map(async ([name, contents]) => {
+      const filePath = path.join(directory, name);
+      await mkdir(path.dirname(filePath), { recursive: true });
+      await writeFile(filePath, contents, 'utf8');
+    }),
   );
   t.after(() => rm(root, { recursive: true, force: true }));
   return directory;
@@ -115,18 +117,28 @@ function runOrientationCli(directory, ...arguments_) {
 }
 
 async function snapshotProposalDirectory(directory) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  return Object.fromEntries(
-    await Promise.all(
-      entries
-        .filter((entry) => entry.isFile())
-        .sort((left, right) => left.name.localeCompare(right.name))
-        .map(async (entry) => [
-          entry.name,
-          await readFile(path.join(directory, entry.name), 'utf8'),
-        ]),
-    ),
-  );
+  const files = [];
+
+  async function visit(currentDirectory, relativeDirectory = '') {
+    const entries = await readdir(currentDirectory, { withFileTypes: true });
+    for (const entry of entries.sort((left, right) =>
+      left.name.localeCompare(right.name),
+    )) {
+      const relativePath = path.join(relativeDirectory, entry.name);
+      const absolutePath = path.join(currentDirectory, entry.name);
+      if (entry.isDirectory()) {
+        await visit(absolutePath, relativePath);
+      } else if (entry.isFile()) {
+        files.push([
+          relativePath.split(path.sep).join('/'),
+          await readFile(absolutePath, 'utf8'),
+        ]);
+      }
+    }
+  }
+
+  await visit(directory);
+  return Object.fromEntries(files);
 }
 
 async function writeCurrentProposalIndex(directory) {
@@ -172,6 +184,258 @@ test('accepts valid proposal metadata and derives dependency-eligible work', asy
   assert.deepEqual(
     schedule.readyToMaterialize.map(({ id }) => id),
     ['PROP-001'],
+  );
+  assert.equal(
+    result.proposals.find(({ id }) => id === 'PROP-004').relativePath,
+    'archive/implemented/PROP-004-delta.md',
+  );
+});
+
+test('recursively discovers archived dependencies and generates their relative links', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-002-beta.md': proposal({
+      id: 'PROP-002',
+      title: 'Beta proposal',
+      dependsOn: ['PROP-001'],
+    }),
+    'archive/implemented/PROP-001-alpha.md': proposal({
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    }),
+  });
+
+  const result = await validateProposalDirectory(directory);
+  const index = await renderProposalIndex(
+    result.proposals,
+    path.join(directory, 'README.md'),
+  );
+
+  assert.deepEqual(result.issues, []);
+  assert.deepEqual(
+    result.proposals.map(({ id, relativePath }) => [id, relativePath]),
+    [
+      ['PROP-001', 'archive/implemented/PROP-001-alpha.md'],
+      ['PROP-002', 'PROP-002-beta.md'],
+    ],
+  );
+  assert.equal(
+    deriveProposalSchedule(result.proposals).recommended.id,
+    'PROP-002',
+  );
+  assert.match(
+    index,
+    /\[PROP-001 — Alpha proposal\]\(\.\/archive\/implemented\/PROP-001-alpha\.md\)/,
+  );
+  assert.match(index, /Next proposal ID: `PROP-003`\./);
+});
+
+test('rejects duplicate IDs across the active root and terminal archive', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-alpha.md': proposal(),
+    'archive/implemented/PROP-001-beta.md': proposal({
+      title: 'Beta proposal',
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    }),
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.match(
+    issueMessages(result).join('\n'),
+    /duplicate proposal ID PROP-001/,
+  );
+});
+
+test('requires every lifecycle status to use its exact proposal directory', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-implemented-at-root.md': proposal({
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    }),
+    'archive/implemented/PROP-002-unfinished-in-archive.md': proposal({
+      id: 'PROP-002',
+      title: 'Unfinished proposal',
+    }),
+    'archive/rejected/PROP-003-wrong-terminal-directory.md': proposal({
+      id: 'PROP-003',
+      title: 'Wrong terminal directory',
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    }),
+  });
+
+  const result = await validateProposalDirectory(directory);
+  const messages = issueMessages(result).join('\n');
+
+  assert.match(messages, /implemented must be in archive\/implemented/);
+  assert.match(messages, /design-draft must be in the proposal root/);
+  assert.equal(
+    messages.match(/implemented must be in archive\/implemented/g)?.length,
+    2,
+  );
+});
+
+test('validates local Markdown links from root and archived proposal paths', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-002-beta.md': `${proposal({
+      id: 'PROP-002',
+      title: 'Beta proposal',
+    })}[Implemented alpha](./archive/implemented/PROP-001-alpha.md)\n`,
+    'archive/implemented/PROP-001-alpha.md': `${proposal({
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    })}[Active beta](../../PROP-002-beta.md)\n`,
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(result.issues, []);
+});
+
+test('reports broken local Markdown links in root and archived proposals', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-alpha.md': `${proposal()}[Missing](./missing.md)\n`,
+    'archive/implemented/PROP-002-beta.md': `${proposal({
+      id: 'PROP-002',
+      title: 'Beta proposal',
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    })}[Also missing](../../also-missing.md)\n`,
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(
+    result.issues
+      .filter(({ message }) => message.includes('broken local link'))
+      .map(({ file, message }) => [file, message]),
+    [
+      ['PROP-001-alpha.md', 'broken local link ./missing.md'],
+      [
+        'archive/implemented/PROP-002-beta.md',
+        'broken local link ../../also-missing.md',
+      ],
+    ],
+  );
+});
+
+test('parses Markdown links without treating code examples as destinations', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-alpha.md': `${proposal()}
+\`[Inline code](./inline-code-missing.md)\`
+
+\`\`\`markdown
+[Fenced code](./fenced-code-missing.md)
+\`\`\`
+
+[Balanced destination](./assets/reference-(v1).txt)
+[Reference destination][guide]
+[Missing reference][missing]
+
+[guide]: <./assets/reference-(v1).txt>
+[missing]: ./missing-reference.md
+`,
+    'assets/reference-(v1).txt': 'reference\n',
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(
+    result.issues
+      .filter(({ message }) => message.includes('local link'))
+      .map(({ message }) => message),
+    ['broken local link ./missing-reference.md'],
+  );
+});
+
+test('validates proposal-body links without interpreting frontmatter as Markdown', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-alpha.md': proposal({
+      decisionAuthority:
+        'repository-owner [metadata](./metadata-link-missing.md)',
+    }),
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(
+    result.issues.filter(({ message }) => message.includes('local link')),
+    [],
+  );
+});
+
+test('masks inline code consistently when non-BMP characters precede links', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-alpha.md': `${proposal()}😀 \`🧪 [Code](./emoji-code-missing.md)\`
+
+[Body](./body-link-missing.md)
+`,
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(
+    result.issues
+      .filter(({ message }) => message.includes('local link'))
+      .map(({ message }) => message),
+    ['broken local link ./body-link-missing.md'],
+  );
+});
+
+test('reports malformed percent encoding as a validation issue', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'PROP-001-alpha.md': `${proposal()}[Malformed](./bad%2)\n`,
+  });
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(
+    result.issues
+      .filter(({ message }) => message.includes('local link'))
+      .map(({ file, message }) => [file, message]),
+    [['PROP-001-alpha.md', 'malformed local link ./bad%2']],
+  );
+});
+
+test('rejects case-mismatched and repository-escaping local links', async (t) => {
+  const directory = await createProposalDirectory(t, {});
+  const repositoryRoot = path.resolve(directory, '..', '..');
+  const externalPath = `${repositoryRoot}-external.txt`;
+  const escapingTarget = path
+    .relative(directory, externalPath)
+    .split(path.sep)
+    .join('/');
+  await mkdir(path.join(directory, 'Assets'), { recursive: true });
+  await writeFile(
+    path.join(directory, 'Assets', 'Guide.txt'),
+    'guide\n',
+    'utf8',
+  );
+  await writeFile(externalPath, 'outside\n', 'utf8');
+  await writeFile(
+    path.join(directory, 'PROP-001-alpha.md'),
+    `${proposal()}[Wrong case](./assets/Guide.txt)\n[Escape](${escapingTarget})\n`,
+    'utf8',
+  );
+  t.after(() => rm(externalPath, { force: true }));
+
+  const result = await validateProposalDirectory(directory);
+
+  assert.deepEqual(
+    result.issues
+      .filter(({ message }) => message.includes('broken local link'))
+      .map(({ message }) => message),
+    [
+      'broken local link ./assets/Guide.txt',
+      `broken local link ${escapingTarget}`,
+    ],
   );
 });
 
@@ -582,6 +846,11 @@ test('renders deterministic grouped index content from proposal metadata', async
   assert.match(index, /## Unfinished design work/);
   assert.match(index, /## Ready to Materialize/);
   assert.match(index, /blocked by PROP-002/);
+  assert.match(
+    index,
+    /\[PROP-004 — Delta proposal\]\(\.\/archive\/implemented\/PROP-004-delta\.md\)/,
+  );
+  assert.match(index, /Next proposal ID: `PROP-005`\./);
   assert.equal(index, await format(index, { parser: 'markdown' }));
   assert.equal(index, await renderProposalIndex(result.proposals));
 });
@@ -642,6 +911,31 @@ test('orientation CLI renders explicit-ID JSON without mutating files', async (t
   assert.equal(output.proposal.workState, null);
   assert.equal(output.needsHumanDecision, null);
   assert.equal(output.mutationPerformed, false);
+  assert.deepEqual(await snapshotProposalDirectory(directory), before);
+});
+
+test('orientation CLI finds archived terminal proposals without selecting them as work', async (t) => {
+  const directory = await createProposalDirectory(t, {
+    'archive/implemented/PROP-001-alpha.md': proposal({
+      status: 'implemented',
+      workState: undefined,
+      nextAction: undefined,
+    }),
+  });
+  await writeCurrentProposalIndex(directory);
+  const before = await snapshotProposalDirectory(directory);
+
+  const explicitCli = runOrientationCli(directory, 'PROP-001', '--json');
+  const queueCli = runOrientationCli(directory, '--json');
+  const explicit = JSON.parse(explicitCli.stdout);
+  const queue = JSON.parse(queueCli.stdout);
+
+  assert.equal(explicitCli.status, 0);
+  assert.equal(explicit.proposal.id, 'PROP-001');
+  assert.equal(explicit.proposal.eligibility, 'terminal');
+  assert.equal(explicit.proposal.nextAction, null);
+  assert.equal(queueCli.status, 0);
+  assert.equal(queue.proposal, null);
   assert.deepEqual(await snapshotProposalDirectory(directory), before);
 });
 

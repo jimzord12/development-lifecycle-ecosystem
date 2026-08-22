@@ -18,6 +18,10 @@ Proposal identity, YAML metadata, dependency, scheduling, and derived-index rule
 
 Follow [DLE Proposal Workflow V1](./docs/standards/dle-proposal-workflow-v1.md). Validate and run `pnpm proposals:orient` before proposal work; an explicitly selected proposal takes precedence over the automatic recommendation. Read only the selected proposal and the authority needed for its next action, keep `ACTIVE` chat-local, and persist exactly one allowed session outcome. After a metadata mutation, regenerate and validate the proposal index. Never infer authority to set `implementation-ready`, `rejected`, or `superseded`.
 
+Keep `exploration`, `design-draft`, and `implementation-ready` proposals directly under `docs/proposals/`. Terminal proposals belong in `docs/proposals/archive/<status>/`, where `<status>` is `implemented`, `superseded`, or `rejected`. Proposal discovery is recursive, proposal IDs remain stable when paths move, and terminal records never return to unfinished status.
+
+A terminal transition is one coherent change: update authorized lifecycle metadata and the body record, remove continuation metadata, use `git mv` to preserve history, update repository links, regenerate the proposal index, and run proposal plus broader validation. Do not create redirect files, duplicate proposal copies, path registries, or placeholder archive directories.
+
 ## Architecture
 
 - DLE is an umbrella, not a mandatory shared runtime.

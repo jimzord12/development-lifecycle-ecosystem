@@ -8,7 +8,7 @@
 
 **Tech Stack:** Node.js 24 ESM, `node:test`, `yaml`, Prettier, pnpm 11.
 
-**Spec:** `docs/proposals/PROP-009-dle-proposal-workflow.md`
+**Spec:** `docs/proposals/archive/implemented/PROP-009-dle-proposal-workflow.md`
 
 ## Global Constraints
 
